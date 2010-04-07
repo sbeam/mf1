@@ -1,21 +1,25 @@
 require 'rubygems'
-require 'dm-core'
-require 'dm-timestamps'
-require 'dm-validations'
-require 'dm-aggregates'
 require 'haml'
 require 'ostruct'
+require 'mongo'
 
 require 'sinatra' unless defined?(Sinatra)
+include Mongo
 
 configure do
   SiteConfig = OpenStruct.new(
-                 :title => 'Your Application Name',
-                 :author => 'Your Name',
+                 :title => 'mindf.li',
+                 :author => 'Sam Beam',
                  :url_base => 'http://localhost:4567/'
                )
 
-  DataMapper.setup(:default, "sqlite3:///#{File.expand_path(File.dirname(__FILE__))}/#{Sinatra::Base.environment}.db")
+  #DataMapper.setup(:default, "sqlite3:///#{File.expand_path(File.dirname(__FILE__))}/#{Sinatra::Base.environment}.db")
+
+  DB = Connection.new(ENV['DATABASE_URL'] || 'localhost').db('mindfli')
+
+  if ENV['DATABASE_USER'] && ENV['DATABASE_PASSWORD']
+      auth = DB.authenticate(ENV['DATABASE_USER'], ENV['DATABASE_PASSWORD'])
+  end
 
   # load models
   $LOAD_PATH.unshift("#{File.dirname(__FILE__)}/lib")

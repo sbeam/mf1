@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'environment'
 
+
 configure do
   set :views, "#{File.dirname(__FILE__)}/views"
 end
@@ -16,7 +17,19 @@ helpers do
   # add your helpers here
 end
 
-# root page
 get '/' do
-  haml :root
+    @chirps = Chirp.latest(10)
+    haml :root
+end
+
+get '/new' do
+    haml :new_post
+end
+
+get '/story/:story_id' do
+end
+
+post '/new' do
+    @chirp = Chirp.create(:text=>params[:chirp], :user=>'sbeam', :url=>params[:url])
+    redirect '/'
 end

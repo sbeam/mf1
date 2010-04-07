@@ -1,4 +1,18 @@
-%h2 Main Page
-%p Here is some text.
-%p Here is a <a href='/'>link</a>.
-%p ttys!
+
+.signin
+  %a{:href => '/signup'} Sign up
+  %a{:href => '/signin'} Sign in
+
+%p
+  here's what our users are saying now:
+
+  %ul
+    - @chirps.each do |chirp|
+      %li
+        .chirp= chirp['text']
+        - if chirp['clicky']
+          %a{:href => chirp['clicky'], :class=>'chirplink'}= chirp['clicky']
+        %a{:href => "/users/#{chirp['user']}"}= chirp['user']
+
+.dopost
+  %a{:href => '/new'} Post something.
