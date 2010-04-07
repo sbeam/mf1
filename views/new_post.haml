@@ -1,12 +1,11 @@
-%h1 Post a new message
-.signin
-  %a{:href => '/signup'} Sign up
-  |
-  %a{:href => '/signin'} Sign in
-
 .postform
-  %form{:action=>'/new', :method=>'POST'}
-    %textarea{:name=>'chirp', :rows=>3} Say something.
-    %input{:name=>'url', :value=>"link something."}
-    // %input{:name=>'pic', :value=>"post something."}
-    %input{:name=>'op_post', :type=>'submit', :value=>"share"}
+  %form{:action=>'/new', :method=>'POST',:enctype=>"multipart/form-data"}
+    %div
+      %textarea{:name=>'chirp', :rows=>3} Say something.
+    %div
+      %input{:name=>'url', :value=>"link something."}
+    %div
+      Upload Something
+      %input{:name=>'pic', :type=>'file' } 
+    %div
+      %input{:name=>'op_post', :type=>'submit', :value=>"share"}

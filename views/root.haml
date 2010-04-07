@@ -3,6 +3,10 @@
   %a{:href => '/signup'} Sign up
   %a{:href => '/signin'} Sign in
 
+.dopost
+  = partial :new_post
+
+
 %p
   here's what our users are saying now:
 
@@ -12,7 +16,10 @@
         .chirp= chirp['text']
         - if chirp['clicky']
           %a{:href => chirp['clicky'], :class=>'chirplink'}= chirp['clicky']
+        - if chirp['file']
+          %img{:src => '/images/'+chirp['file'].to_s}
         %a{:href => "/users/#{chirp['user']}"}= chirp['user']
+        %em 
+          posted 
+          = Time.at(chirp['created_at'])
 
-.dopost
-  %a{:href => '/new'} Post something.
