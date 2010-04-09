@@ -22,7 +22,7 @@
         %a{:href => "/users/#{chirp['user']}"}= chirp['user']
         %em 
           posted 
-          = Time.at(chirp['created_at'])
+          = time_ago_in_words(chirp['created_at'])
 
 - else
   %p Nothing yet! be the first!

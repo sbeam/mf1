@@ -56,5 +56,21 @@ helpers do
     haml page, options.merge!(:layout => false)
   end
 
+  def time_ago_in_words(timestamp)
+      minutes = (((Time.now.to_i - timestamp).abs)/60).round
+      return nil if minutes < 0
+
+      case minutes
+      when 0 then 'less than a minute ago'
+      when 0..4 then 'less than 5 minutes ago'
+      when 5..49 then minutes.to_s + ' minutes ago'
+      when 50..70 then 'about 1 hour ago'
+      when 70..119 then 'over 1 hour ago'
+      when 120..239 then 'more than 2 hours ago'
+      when 240..1440 then 'about '+(minutes/60).round.to_s+' hours ago'
+      else timestamp.strftime('%I:%M %p %d-%b-%Y')
+      end
+  end
+
 end
 
