@@ -8,8 +8,9 @@
 
 
 %p
-  here's what our users are saying now:
+  %strong here's what our users are saying now:
 
+- if @chirps.length > 0
   %ul
     - @chirps.each do |chirp|
       %li
@@ -23,3 +24,5 @@
           posted 
           = Time.at(chirp['created_at'])
 
+- else
+  %p Nothing yet! be the first!
