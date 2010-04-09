@@ -3,9 +3,12 @@
     %div
       %textarea{:name=>'chirp', :rows=>3} Say something.
     %div
-      %input{:name=>'url', :value=>"link something."}
+      %label 
+        link something.
+        %input{:name=>'url', :value=>""}
     %div
-      Upload Something
-      %input{:name=>'pic', :type=>'file' } 
+      %label 
+        upload something.
+        %input{:name=>'pic', :type=>'file' } 
     %div
       %input{:name=>'op_post', :type=>'submit', :value=>"share"}

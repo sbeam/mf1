@@ -85,3 +85,8 @@ ul.chirplisthome .user {
     width: 40em;
     height: 5em;
 }
+#openid_url {
+  background: url(http://openid.net/login-bg.gif) no-repeat #FFF 5px;
+  padding-left: 25px;
+}
+

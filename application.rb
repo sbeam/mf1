@@ -1,7 +1,11 @@
 require 'rubygems'
 require 'sinatra'
 require 'environment'
+require 'openid'
+require 'openid/store/filesystem'
 
+OPENID_REALM = 'http://localhost:9393'
+OPENID_RETURN_TO = "#{OPENID_REALM}/complete"
 
 configure do
   set :views, "#{File.dirname(__FILE__)}/views"
@@ -48,8 +52,43 @@ get '/images/:grid_id' do
     end
 end
 
+get '/login' do
+    haml :login
+end
+
+post '/login' do
+    begin
+      response = openid_consumer.begin params[:openid_url]
+      redirect response.redirect_url(OPENID_REALM, OPENID_RETURN_TO) if response.send_redirect?(OPENID_REALM, OPENID_RETURN_TO)
+      response.html_markup(OPENID_REALM, OPENID_RETURN_TO)
+    rescue
+        @error = "Couldn't find an OpenID for that URL"
+        haml :login
+    end
+end
+
+get '/complete' do
+  response = openid_consumer.complete(params, OPENID_RETURN_TO)
+  if response.status == OpenID::Consumer::SUCCESS
+      #redirect '/'
+      #session[:openID] = something
+      session.inspect
+  else
+      'Could not log on with your OpenID'
+  end
+end
+
 
 helpers do
+
+
+    def openid_consumer
+        if @openid_consumer.nil?
+            @openid_consumer = OpenID::Consumer.new(session, OpenID::Store::Filesystem.new('auth/store')) 
+        end
+        return @openid_consumer
+    end
+
 
   # Usage: partial :foo
   def partial(page, options={})
