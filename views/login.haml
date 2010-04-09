@@ -1,0 +1,9 @@
+- if @error
+  .error= @error
+
+%form{:method=>"post", :action=>'/login'}
+  %p
+    OpenID identifier:
+  %input{:class=>"openid", :id=>"openid_url", :name=>"openid_url", :size=>'50'}
+  %input{:type=>"submit", :value=>"Verify"}
+
