@@ -3,9 +3,10 @@ require 'sinatra'
 require 'environment'
 require 'openid'
 require 'openid/store/filesystem'
+require 'openid/extensions/sreg'
 
 OPENID_REALM = 'http://localhost:9393'
-OPENID_RETURN_TO = "#{OPENID_REALM}/complete"
+OPENID_RETURN_TO = "#{OPENID_REALM}/login/openid/complete"
 
 enable :sessions
 
@@ -21,6 +22,9 @@ end
 
 get '/' do
     @chirps = Chirp.latest(10)
+    if session[:flash] 
+        @flash = session[:flash]
+    end
 
     haml :root
 end
@@ -33,8 +37,14 @@ get '/chirp/:chirp_id' do
 end
 
 post '/new' do
+
+    if !session[:open_id]
+        redirect '/login'
+        return
+    end
+
     @chirp = Chirp.new
-    @chirp.create(:text=>params[:chirp], :user=>'sbeam', :url=>params[:url])
+    @chirp.create(:text=>params[:chirp], :user=>session[:open_id], :url=>params[:url])
 
     if params[:pic] && (tmpfile = params[:pic][:tempfile]) && (name = params[:pic][:filename])
         @chirp.save_upload(name, tmpfile)
@@ -60,29 +70,59 @@ get '/login' do
 end
 
 post '/login' do
+    session = nil
     begin
-      response = openid_consumer.begin params[:openid_url]
-      redirect response.redirect_url(OPENID_REALM, OPENID_RETURN_TO) if response.send_redirect?(OPENID_REALM, OPENID_RETURN_TO)
-      response.html_markup(OPENID_REALM, OPENID_RETURN_TO)
-    rescue
-        @error = "Couldn't find an OpenID for that URL"
-        haml :login
+      oidreq = openid_consumer.begin params[:openid_url]
+    rescue OpenID::DiscoveryFailure => why
+      @error = "Sorry, we couldn't find your identifier '#{params[:openid_url]}'"
+      haml :login
+    else
+        sregreq = OpenID::SReg::Request.new
+        sregreq.request_fields(['email','nickname'], true)
+        sregreq.request_fields(['dob', 'fullname'], false)
+        oidreq.add_extension(sregreq)
+        if oidreq.send_redirect?(OPENID_REALM, OPENID_RETURN_TO)
+            redirect oidreq.redirect_url(OPENID_REALM, OPENID_RETURN_TO)
+        end
+        oidreq.html_markup(OPENID_REALM, OPENID_RETURN_TO)
     end
 end
 
-get '/complete' do
-  response = openid_consumer.complete(params, OPENID_RETURN_TO)
-  if response.status == OpenID::Consumer::SUCCESS
-      session[:open_id_identity] = response.identity_url
-      redirect '/'
+get '/login/openid/complete' do
+  oidresp = openid_consumer.complete(params, OPENID_RETURN_TO)
+  if oidresp.status == OpenID::Consumer::SUCCESS
+      sreg_resp = OpenID::SReg::Response.from_success_response(oidresp)
+      sreg_message = "Simple Registration data was requested"
+      if sreg_resp.empty?
+          sreg_message << ", but none was returned."
+      else
+          sreg_message << ". The following data were sent:"
+          sreg_resp.data.each {|k,v|
+              sreg_message << "<br/><b>#{k}</b>: #{v}"
+          }
+      end
+      session[:flash] = @sreg_message
+      session[:open_id] = [:url => oidresp.identity_url,
+                          :nick => params['openid.sreg.nickname'],
+                          :name => params['openid.sreg.fullname']]
+      sreg_message
+      #redirect '/'
   else
+      session[:open_id] = nil
       'Could not log on with your OpenID'
   end
 end
 
+get '/logout' do
+    session[:open_id] = nil
+    redirect '/'
+end
 
 helpers do
 
+    def logged_in?
+        !session[:open_id].nil?
+    end
 
     def openid_consumer
         if @openid_consumer.nil?

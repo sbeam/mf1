@@ -4,6 +4,8 @@
 .dopost
   = partial :new_post
 
+%pre
+  = session.inspect
 
 %p
   %strong here's what our users are saying now:
@@ -26,3 +28,4 @@
 
 - else
   %p Nothing yet! be the first!
+
