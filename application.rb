@@ -7,6 +7,8 @@ require 'openid/store/filesystem'
 OPENID_REALM = 'http://localhost:9393'
 OPENID_RETURN_TO = "#{OPENID_REALM}/complete"
 
+enable :sessions
+
 configure do
   set :views, "#{File.dirname(__FILE__)}/views"
 end
@@ -19,6 +21,7 @@ end
 
 get '/' do
     @chirps = Chirp.latest(10)
+
     haml :root
 end
 
@@ -70,9 +73,8 @@ end
 get '/complete' do
   response = openid_consumer.complete(params, OPENID_RETURN_TO)
   if response.status == OpenID::Consumer::SUCCESS
-      #redirect '/'
-      #session[:openID] = something
-      session.inspect
+      session[:open_id_identity] = response.identity_url
+      redirect '/'
   else
       'Could not log on with your OpenID'
   end
@@ -107,7 +109,7 @@ helpers do
       when 70..119 then 'over 1 hour ago'
       when 120..239 then 'more than 2 hours ago'
       when 240..1440 then 'about '+(minutes/60).round.to_s+' hours ago'
-      else timestamp.strftime('%I:%M %p %d-%b-%Y')
+      else Time.at(timestamp).strftime('%I:%M %p %d-%b-%Y')
       end
   end
 
