@@ -1,12 +1,6 @@
 require 'rubygems'
 require 'sinatra'
 require 'environment'
-require 'openid'
-require 'openid/store/filesystem'
-require 'openid/extensions/sreg'
-
-OPENID_REALM = 'http://localhost:9393'
-OPENID_RETURN_TO = "#{OPENID_REALM}/login/openid/complete"
 
 enable :sessions
 
@@ -37,12 +31,6 @@ get '/chirp/:chirp_id' do
 end
 
 post '/new' do
-
-    if !session[:open_id]
-        redirect '/login'
-        return
-    end
-
     @chirp = Chirp.new
     @chirp.create(:text=>params[:chirp], :user=>session[:open_id], :url=>params[:url])
 
@@ -65,72 +53,8 @@ get '/images/:grid_id' do
     end
 end
 
-get '/login' do
-    haml :login
-end
-
-post '/login' do
-    session = nil
-    begin
-      oidreq = openid_consumer.begin params[:openid_url]
-    rescue OpenID::DiscoveryFailure => why
-      @error = "Sorry, we couldn't find your identifier '#{params[:openid_url]}'"
-      haml :login
-    else
-        sregreq = OpenID::SReg::Request.new
-        sregreq.request_fields(['email','nickname'], true)
-        sregreq.request_fields(['dob', 'fullname'], false)
-        oidreq.add_extension(sregreq)
-        if oidreq.send_redirect?(OPENID_REALM, OPENID_RETURN_TO)
-            redirect oidreq.redirect_url(OPENID_REALM, OPENID_RETURN_TO)
-        end
-        oidreq.html_markup(OPENID_REALM, OPENID_RETURN_TO)
-    end
-end
-
-get '/login/openid/complete' do
-  oidresp = openid_consumer.complete(params, OPENID_RETURN_TO)
-  if oidresp.status == OpenID::Consumer::SUCCESS
-      sreg_resp = OpenID::SReg::Response.from_success_response(oidresp)
-      sreg_message = "Simple Registration data was requested"
-      if sreg_resp.empty?
-          sreg_message << ", but none was returned."
-      else
-          sreg_message << ". The following data were sent:"
-          sreg_resp.data.each {|k,v|
-              sreg_message << "<br/><b>#{k}</b>: #{v}"
-          }
-      end
-      session[:flash] = @sreg_message
-      session[:open_id] = [:url => oidresp.identity_url,
-                          :nick => params['openid.sreg.nickname'],
-                          :name => params['openid.sreg.fullname']]
-      sreg_message
-      #redirect '/'
-  else
-      session[:open_id] = nil
-      'Could not log on with your OpenID'
-  end
-end
-
-get '/logout' do
-    session[:open_id] = nil
-    redirect '/'
-end
 
 helpers do
-
-    def logged_in?
-        !session[:open_id].nil?
-    end
-
-    def openid_consumer
-        if @openid_consumer.nil?
-            @openid_consumer = OpenID::Consumer.new(session, OpenID::Store::Filesystem.new('auth/store')) 
-        end
-        return @openid_consumer
-    end
-
 
   # Usage: partial :foo
   def partial(page, options={})
