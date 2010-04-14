@@ -31,6 +31,13 @@ get '/login' do
     redirect '/'
 end
 
+get '/logout' do
+    if authenticated?
+        logout
+    end
+    redirect '/'
+end
+
 get '/new' do
     protect!
     haml :new_post
@@ -42,7 +49,7 @@ end
 post '/new' do
     protect!
     @chirp = Chirp.new
-    @chirp.create(:text=>params[:chirp], :user=>session[:open_id], :url=>params[:url])
+    @chirp.create(:text=>params[:chirp], :user=>current_user, :url=>params[:url])
 
     if params[:pic] && (tmpfile = params[:pic][:tempfile]) && (name = params[:pic][:filename])
         @chirp.save_upload(name, tmpfile)
@@ -63,6 +70,11 @@ get '/images/:grid_id' do
     end
 end
 
+
+get '/current_user' do
+    protect!
+    partial :current_user
+end
 
 helpers do
 
@@ -100,11 +112,16 @@ helpers do
 
   def authenticated?
     @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ['radmin', 'admin']
+    @auth.provided? && @auth.basic? && @auth.credentials && User.check(@auth.credentials)
   end
 
-  def username
+  def current_user
       @auth.credentials[0] if authenticated?
+  end
+
+  def logout
+      # ok with Sinatra, but won't work under shotgun due to RackException, giving up
+      #response.set_cookie('logout', {:value => "bar"})
   end
   
 

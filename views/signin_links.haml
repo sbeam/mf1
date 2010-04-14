@@ -1,8 +1,1 @@
-.signin
-  - if authenticated?
-    You are logged in as
-    %strong= username
-  - else
-    %a{:href => '/login'} Sign in
-
-
+%iframe{:src => '/current_user', :style=>"height: 2em; width: 100%; border: 0",:scrolling=>'no'}
