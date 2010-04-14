@@ -1,5 +1,8 @@
 .signin
-  %a{:href => '/signup'} Sign up
-  |
-  %a{:href => '/login'} Sign in
+  - if authenticated?
+    You are logged in as
+    %strong= username
+  - else
+    %a{:href => '/login'} Sign in
+
 

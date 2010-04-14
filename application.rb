@@ -14,6 +14,9 @@ error do
   'Application error'
 end
 
+before do
+end
+
 get '/' do
     @chirps = Chirp.latest(10)
     if session[:flash] 
@@ -23,7 +26,13 @@ get '/' do
     haml :root
 end
 
+get '/login' do
+    protect!
+    redirect '/'
+end
+
 get '/new' do
+    protect!
     haml :new_post
 end
 
@@ -31,6 +40,7 @@ get '/chirp/:chirp_id' do
 end
 
 post '/new' do
+    protect!
     @chirp = Chirp.new
     @chirp.create(:text=>params[:chirp], :user=>session[:open_id], :url=>params[:url])
 
@@ -76,6 +86,27 @@ helpers do
       else Time.at(timestamp).strftime('%I:%M %p %d-%b-%Y')
       end
   end
+
+  def protect!
+    unless authorized?
+      response['WWW-Authenticate'] = %(Basic realm="mf1 userlist")
+      throw(:halt, [401, "Not authorized\n"])
+    end
+  end
+
+  def authorized?
+      authenticated? 
+  end
+
+  def authenticated?
+    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ['radmin', 'admin']
+  end
+
+  def username
+      @auth.credentials[0] if authenticated?
+  end
+  
 
 end
 
