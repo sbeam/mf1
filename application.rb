@@ -46,6 +46,14 @@ end
 get '/chirp/:chirp_id' do
 end
 
+get '/users/:username' do
+    if @user = DB['users'].find_one(:username => params[:username])
+        @chirps = DB['chirps'].find({:user => params[:username]},
+                                    {:sort=>[['created_at','descending']]}).collect
+    end
+    haml :chirplist
+end
+
 post '/new' do
     protect!
     @chirp = Chirp.new

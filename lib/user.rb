@@ -17,4 +17,8 @@ class User
         creds[1].crypt(@current_user['password']) == @current_user['password']
     end
 
+    def self.find_by_username(un)
+    end
+
+
 end
