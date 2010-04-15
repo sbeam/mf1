@@ -84,6 +84,19 @@ get '/current_user' do
     partial :current_user
 end
 
+
+post '/follow/:username' do
+    protect!
+    if @user = DB['users'].find_one(:username => params[:username])
+        DB['users'].update({:username => current_user}, {'$push' => {:following => params[:username}});
+        flash "You are now following " . params['username']
+    else
+        flash "Could not find that username?!"
+    end
+    redirect '/'
+end
+
+
 helpers do
 
   # Usage: partial :foo

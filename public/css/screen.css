@@ -1,10 +1,11 @@
 body {
-  background: #333;
-  color: #eee;
+  background: #eee;
+  color: #333;
   font-family: Verdana, Arial, Helvetica, sans-serif;
+  background: url(/waxwings.jpg) fixed no-repeat;
 }
 a {
-    color: #fc0;
+    color: #08b;
 }
 .postform {
     margin: 20px 0;
@@ -35,7 +36,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: .25em;
   font-weight: bold;
 }
-h1 { font-size: 2.2em; }
+h1 { font-size: 1.8em; text-align: left; }
 h2 { font-size: 1.6em; }
 h3 { font-size: 1.4em; }
 h4 { font-size: 1.3em; }
@@ -44,9 +45,9 @@ h6 { font-size: 1.1em; }
 p {
   margin-bottom: 1em;
   line-height: 1.3;
+  background: #eee;
 }
 a {
-  color: #095EAE;
   font-weight: bold;
   text-decoration: none;
 }
@@ -58,32 +59,36 @@ a:hover {
 }
 ul.chirplisthome {
     list-style: none;
+    margin:0;
+    padding: 0;
 }
 ul.chirplisthome li {
-    border: 1px solid #339;
-    border-width: 1px 0;
+    border-top: 1px solid #08b;
     padding: 0.5em 1em;
-    background: #444;
+    background: #eee;
     margin: 0.5em 0;
 }
 ul.chirplisthome .user {
-    border-bottom: 1px solid #222;
+    border-bottom: 1px dashed #aaa;
     padding-bottom: 0.1em;
 }
 
 .postform {
-    border: 1px solid #eee;
-    background: #444;
+    border: 1px solid #aaa;
+    background: #eee;
     padding: 0.5em 1em;
 }
 .postform textarea, 
 .postform input {
     border: 1px solid #111;
-    background: #eee;
+    background: #fff;
 }
 .postform textarea {
     width: 40em;
     height: 5em;
+}
+.postform label {
+    display: block;
 }
 #openid_url {
   background: url(http://openid.net/login-bg.gif) no-repeat #FFF 5px;

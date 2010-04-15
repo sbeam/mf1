@@ -1,7 +1,8 @@
 .postform
   %form{:action=>'/new', :method=>'POST',:enctype=>"multipart/form-data"}
     %div
-      %textarea{:name=>'chirp', :rows=>3} Say something.
+      %label{:for => 'chirp'} Say something.
+      %textarea{:name=>'chirp', :rows=>3} 
     %div
       %label 
         link something.
