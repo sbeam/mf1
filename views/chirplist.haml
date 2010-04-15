@@ -14,7 +14,8 @@
 
         - if chirp['user'] != current_user
           %span.follow
-            %a{:href => "/follow/#{chirp['user']}"} [follow]
+            - unless following?(chirp['user'])
+              %a{:href => "/follow/#{chirp['user']}"} [follow]
 
 
       - if chirp['file']

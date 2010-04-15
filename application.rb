@@ -146,6 +146,13 @@ helpers do
       # ok with Sinatra, but won't work under shotgun due to RackException, giving up
       #response.set_cookie('logout', {:value => "bar"})
   end
+
+  def following? (username)
+      if current_user && User.exists?(username)
+        followed = DB['users'].find_one({:username => current_user}, {:fields => ['following']}).to_a.assoc('following').pop
+        followed.include?(username)
+      end
+  end
   
 
 end
