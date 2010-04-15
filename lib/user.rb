@@ -9,7 +9,7 @@ class User
       id = DB['users'].save({'username' => params[:username], 
                              'password' => params[:password].crypt((rand*100).to_s), 
                              'created_at'=>Time.now.to_i})
-      User.new(params[:username]) #@current_user = DB['users'].find_one(id)
+      @current_user = User.new(params[:username]) #@current_user = DB['users'].find_one(id)
     end
 
     def initialize(username)
@@ -19,7 +19,7 @@ class User
     # creds = [username, pass]
     def check(creds)
         if @current_user.nil?
-            self.create({:username => creds[0], :password => creds[1]})
+            User.create({:username => creds[0], :password => creds[1]})
         end
         creds[1].crypt(@current_user['password']) == @current_user['password']
     end
