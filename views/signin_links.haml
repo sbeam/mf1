@@ -1,5 +1,9 @@
 .signin
-  - if authenticated?
+  - if flash.has?(:error)
+    .userError= flash[:error]
+  - elsif flash.has?(:notice)
+    .userNotice= flash[:notice]
+  - elsif authenticated?
     You are logged in as
     %strong= auth_username
     -# %a{:href => '/logout'} logout

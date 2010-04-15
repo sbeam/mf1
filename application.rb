@@ -16,8 +16,6 @@ error do
   'Application error'
 end
 
-before do
-end
 
 get '/' do
     ask_for_auth! # TODO poor little Safari needs this
@@ -31,18 +29,6 @@ get '/login' do
     redirect '/'
 end
 
-get '/logout' do
-    if authenticated?
-        logout
-    end
-    redirect '/'
-end
-
-get '/new' do
-    protect!
-    haml :new_post
-end
-
 get '/users/:username' do
     ask_for_auth!
     if User.exists?(params[:username])
@@ -52,7 +38,7 @@ get '/users/:username' do
     haml :chirplist
 end
 
-post '/new' do
+post '/chirp' do
     protect!
     @chirp = Chirp.new
     @chirp.create(:text=>params[:chirp], :user=>auth_username, :url=>params[:url])
@@ -132,8 +118,8 @@ helpers do
   def authenticated?
     @auth ||=  Rack::Auth::Basic::Request.new(request.env)
     if @auth.provided? && @auth.basic? && @auth.credentials 
-        user = User.new(@auth.credentials[0])
-        if user && user.check(@auth.credentials)
+        @current_user = User.new(@auth.credentials[0])
+        if @current_user && @current_user.check(@auth.credentials)
             session[:did_auth] = 1
         end
     end
@@ -149,9 +135,8 @@ helpers do
   end
 
   def following? (username)
-      if auth_username && User.exists?(username)
-        followed = DB['users'].find_one({:username => auth_username}, {:fields => ['following']}).to_a.assoc('following').pop
-        followed.include?(username)
+      if authenticated? && User.exists?(username)
+          @current_user.following?(username)
       end
   end
   
