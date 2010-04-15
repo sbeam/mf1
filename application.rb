@@ -136,7 +136,7 @@ helpers do
 
   def following? (username)
       if authenticated? && User.exists?(username)
-          @current_user.following?(username)
+          @current_user.is_following?(username)
       end
   end
   

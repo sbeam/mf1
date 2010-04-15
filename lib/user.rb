@@ -13,6 +13,7 @@ class User
     def create(params)
       id = DB['users'].save({'username' => params[:username], 
                              'password' => params[:password].crypt((rand*100).to_s), 
+                             'following' => [],
                              'created_at'=>Time.now.to_i})
       initialize(params[:username]) 
     end
@@ -25,7 +26,7 @@ class User
         creds[1].crypt(@current_user['password']) == @current_user['password']
     end
 
-    def following?(username)
+    def is_following?(username)
       if !@current_user.nil? && User.exists?(username)
         if followed_list = @current_user.to_a.assoc('following')
             followed_list[1].include?(username)
@@ -33,5 +34,8 @@ class User
       end
     end
 
+    def who_follows
+        @current_user['following']
+    end
 
 end
