@@ -9,6 +9,12 @@
         #logo
           %h1
             %a{:href => '/'}= SiteConfig.title
+
+      - if flash.has?(:notice)
+        .userNotice= flash[:notice]
+      - if flash.has?(:error)
+        .userError= flash[:error]
+
       #content= yield
       #footer
         %p#legal= "&mdash; &copy; #{Time.now.strftime('%Y')} #{SiteConfig.author} &mdash;"

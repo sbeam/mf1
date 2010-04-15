@@ -47,6 +47,15 @@ p {
   line-height: 1.3;
   background: #eee;
 }
+.userNotice {
+    font-weight: bold;
+    background: #eee;
+}
+.userError {
+    font-weight: bold;
+    background: #eee;
+    color: #b80;
+}
 a {
   font-weight: bold;
   text-decoration: none;

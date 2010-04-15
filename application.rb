@@ -1,8 +1,10 @@
 require 'rubygems'
 require 'sinatra'
 require 'environment'
+require 'rack-flash'
 
 enable :sessions
+use Rack::Flash
 
 configure do
   set :views, "#{File.dirname(__FILE__)}/views"
@@ -85,13 +87,13 @@ get '/current_user' do
 end
 
 
-post '/follow/:username' do
+get '/follow/:username' do
     protect!
     if @user = DB['users'].find_one(:username => params[:username])
-        DB['users'].update({:username => current_user}, {'$push' => {:following => params[:username}});
-        flash "You are now following " . params['username']
+        DB['users'].update({:username => current_user}, {'$addToSet' => {:following => params[:username]}});
+        flash[:notice] = "You are now following '%s'" % params[:username]
     else
-        flash "Could not find that username?!"
+        flash[:error] = "You asked to follow someone that doesn't exist."
     end
     redirect '/'
 end

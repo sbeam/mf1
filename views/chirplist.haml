@@ -11,6 +11,12 @@
     %li
       .user
         %a{:href => "/users/#{chirp['user']}"}= chirp['user']
+
+        - if chirp['user'] != current_user
+          %span.follow
+            %a{:href => "/follow/#{chirp['user']}"} [follow]
+
+
       - if chirp['file']
         .chirp-pic
           %img{:src => '/images/'+chirp['file'].to_s}
