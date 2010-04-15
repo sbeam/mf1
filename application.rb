@@ -20,10 +20,8 @@ before do
 end
 
 get '/' do
+    ask_for_auth! # TODO poor little Safari needs this
     @chirps = Chirp.latest(10)
-    if session[:flash] 
-        @flash = session[:flash]
-    end
 
     haml :root
 end
@@ -49,7 +47,8 @@ get '/chirp/:chirp_id' do
 end
 
 get '/users/:username' do
-    if @user = DB['users'].find_one(:username => params[:username])
+    ask_for_auth!
+    if User.exists?(params[:username])
         @chirps = DB['chirps'].find({:user => params[:username]},
                                     {:sort=>[['created_at','descending']]}).collect
     end
@@ -59,7 +58,7 @@ end
 post '/new' do
     protect!
     @chirp = Chirp.new
-    @chirp.create(:text=>params[:chirp], :user=>current_user, :url=>params[:url])
+    @chirp.create(:text=>params[:chirp], :user=>auth_username, :url=>params[:url])
 
     if params[:pic] && (tmpfile = params[:pic][:tempfile]) && (name = params[:pic][:filename])
         @chirp.save_upload(name, tmpfile)
@@ -81,7 +80,7 @@ get '/images/:grid_id' do
 end
 
 
-get '/current_user' do
+get '/current_user' do # used from IFRAME in root.haml only, browser hackery
     protect!
     partial :current_user
 end
@@ -90,7 +89,7 @@ end
 get '/follow/:username' do
     protect!
     if @user = DB['users'].find_one(:username => params[:username])
-        DB['users'].update({:username => current_user}, {'$addToSet' => {:following => params[:username]}});
+        DB['users'].update({:username => auth_username}, {'$addToSet' => {:following => params[:username]}});
         flash[:notice] = "You are now following '%s'" % params[:username]
     else
         flash[:error] = "You asked to follow someone that doesn't exist."
@@ -129,16 +128,27 @@ helpers do
     end
   end
 
+  def ask_for_auth!  # this is here only for poor little Safari
+      unless session[:did_auth].nil?
+          protect!
+      end
+  end
+
   def authorized?
       authenticated? 
   end
 
   def authenticated?
     @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? && @auth.basic? && @auth.credentials && User.check(@auth.credentials)
+    if @auth.provided? && @auth.basic? && @auth.credentials 
+        user = User.new(@auth.credentials[0])
+        if user && user.check(@auth.credentials)
+            session[:did_auth] = 1
+        end
+    end
   end
 
-  def current_user
+  def auth_username
       @auth.credentials[0] if authenticated?
   end
 
@@ -148,8 +158,8 @@ helpers do
   end
 
   def following? (username)
-      if current_user && User.exists?(username)
-        followed = DB['users'].find_one({:username => current_user}, {:fields => ['following']}).to_a.assoc('following').pop
+      if auth_username && User.exists?(username)
+        followed = DB['users'].find_one({:username => auth_username}, {:fields => ['following']}).to_a.assoc('following').pop
         followed.include?(username)
       end
   end

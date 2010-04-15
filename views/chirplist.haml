@@ -12,7 +12,7 @@
       .user
         %a{:href => "/users/#{chirp['user']}"}= chirp['user']
 
-        - if chirp['user'] != current_user
+        - if chirp['user'] != auth_username
           %span.follow
             - unless following?(chirp['user'])
               %a{:href => "/follow/#{chirp['user']}"} [follow]
@@ -23,7 +23,8 @@
           %img{:src => '/images/'+chirp['file'].to_s}
       .chirp= chirp['text']
       - if chirp['clicky']
-        %a{:href => chirp['clicky'], :class=>'chirplink'}= chirp['clicky']
+        .clicky
+          %a{:href => chirp['clicky'], :class=>'chirplink'}= chirp['clicky']
       %em 
         posted 
         = time_ago_in_words(chirp['created_at'])
