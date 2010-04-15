@@ -1,3 +1,4 @@
+
 class User
     
     def self.exists?(un)
@@ -9,7 +10,7 @@ class User
       id = DB['users'].save({'username' => params[:username], 
                              'password' => params[:password].crypt((rand*100).to_s), 
                              'created_at'=>Time.now.to_i})
-      @current_user = User.new(params[:username]) #@current_user = DB['users'].find_one(id)
+      @current_user = User.new(params[:username]) 
     end
 
     def initialize(username)

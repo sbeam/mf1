@@ -43,9 +43,6 @@ get '/new' do
     haml :new_post
 end
 
-get '/chirp/:chirp_id' do
-end
-
 get '/users/:username' do
     ask_for_auth!
     if User.exists?(params[:username])
@@ -77,12 +74,6 @@ get '/images/:grid_id' do
         
         img.read
     end
-end
-
-
-get '/current_user' do # used from IFRAME in root.haml only, browser hackery
-    protect!
-    partial :current_user
 end
 
 
