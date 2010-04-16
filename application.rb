@@ -19,7 +19,7 @@ end
 
 get '/' do
     ask_for_auth! # TODO poor little Safari needs this
-    if @current_user.nil?
+    if @current_user.nil? or @current_user.who_follows.empty?
         @chirps = Chirp.latest(10)
     else
         @chirps = Chirp.latest(10, @current_user.who_follows << auth_username)
