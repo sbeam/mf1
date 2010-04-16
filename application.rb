@@ -78,6 +78,12 @@ get '/follow/:username' do
     redirect '/'
 end
 
+post '/users/find' do
+    @term = params[:term]
+    @finded = DB['users'].find(:username => /#{params[:term]}/i)
+    haml :searchresult
+end
+
 
 helpers do
 
