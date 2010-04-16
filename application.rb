@@ -85,6 +85,11 @@ post '/users/find' do
     haml :searchresult
 end
 
+get '/profile' do
+    protect!
+    haml :profile
+end
+
 
 helpers do
 

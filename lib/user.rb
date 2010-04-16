@@ -38,4 +38,8 @@ class User
         @current_user['following']
     end
 
+    def followers(un)
+        DB['users'].find(:following => un)
+    end
+
 end

@@ -1,0 +1,13 @@
+.profileForm
+  %strong= auth_username
+
+  %h5 Your followers
+  - @current_user.followers(auth_username).each do |fo|
+    .follower
+      = fo['username']
+
+
+  =partial :followed_list
+  
+
+
