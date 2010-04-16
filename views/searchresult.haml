@@ -1,0 +1,15 @@
+
+.searchResult
+  %h5 
+    Your search for
+    = @term
+    yielded
+    = @finded.count
+    results.
+
+  .searchList
+    - @finded.each do |res|
+      .found
+        %a{:href=>"/users/%s" % res['username']}= res['username']
+
+  = partial :findform
