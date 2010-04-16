@@ -22,7 +22,7 @@ get '/' do
     if @current_user.nil?
         @chirps = Chirp.latest(10)
     else
-        @chirps = Chirp.latest(10, @current_user.who_follows)
+        @chirps = Chirp.latest(10, @current_user.who_follows << auth_username)
     end
 
     haml :root
