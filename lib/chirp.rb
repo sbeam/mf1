@@ -14,8 +14,12 @@ class Chirp
     end
 
 
-    def self.latest(limit=50)
-      DB['chirps'].find({}, {:sort=>[['created_at','descending']], :limit=>limit}).collect
+    def self.latest(limit=50, userlist=[])
+        conditions = {}
+        if userlist.count > 0
+            conditions = {:user => {:$in => ['sbeam','blingo']}}
+        end
+        DB['chirps'].find(conditions, {:sort=>[['created_at','descending']], :limit=>limit}).collect
     end
 
 

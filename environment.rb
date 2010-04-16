@@ -13,8 +13,7 @@ configure do
                  :url_base => 'http://localhost:4567/'
                )
 
-  #DataMapper.setup(:default, "sqlite3:///#{File.expand_path(File.dirname(__FILE__))}/#{Sinatra::Base.environment}.db")
-
+  # here is the mongodb driver connection
   DB = Connection.new(ENV['DATABASE_URL'] || 'localhost').db('mindfli')
 
   if ENV['DATABASE_USER'] && ENV['DATABASE_PASSWORD']
