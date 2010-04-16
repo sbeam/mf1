@@ -38,6 +38,7 @@ get '/users/:username' do
     if User.exists?(params[:username])
         @chirps = DB['chirps'].find({:user => params[:username]},
                                     {:sort=>[['created_at','descending']]}).collect
+        @user = DB['users'].find_one({:username => params[:username]})
     end
     haml :chirplist
 end

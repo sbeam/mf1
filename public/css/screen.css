@@ -85,7 +85,7 @@ ul.chirplisthome .user {
     padding-bottom: 0.1em;
 }
 
-.postform, .followedList {
+.postform, .followedList, .searchResult {
     border: 1px solid #aaa;
     background: #eee;
     padding: 0.5em 1em;

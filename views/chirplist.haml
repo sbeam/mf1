@@ -1,5 +1,13 @@
 - if !@user.nil?
   %p 
+    - if following?(@user['username'])
+      You are following
+      %strong= @user['username']
+    - else
+      %a{:href => "/follow/#{@user['username']}"} 
+        follow 
+        %strong= @user['username']
+  %p 
     Here is what 
     %strong= @user['username']
     has had to say:
