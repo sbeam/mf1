@@ -1,0 +1,12 @@
+- if authenticated?
+  .followedList
+    You are following:
+    - if @current_user.who_follows.count > 0
+      %ul
+        - @current_user.who_follows.each do |fo|
+          %li 
+            %a{:href=>'/users/%s' % fo}= fo
+    -else
+      .nobody Nobody yet. Get on board!
+        
+

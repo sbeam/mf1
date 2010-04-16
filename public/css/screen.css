@@ -85,7 +85,7 @@ ul.chirplisthome .user {
     padding-bottom: 0.1em;
 }
 
-.postform {
+.postform, .followedList {
     border: 1px solid #aaa;
     background: #eee;
     padding: 0.5em 1em;
@@ -107,3 +107,6 @@ ul.chirplisthome .user {
   padding-left: 25px;
 }
 
+.followedList {
+    float: right;
+}

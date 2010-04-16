@@ -1,11 +1,10 @@
 
 = partial :signin_links
 
+= partial :followed_list
+
 .dopost
   = partial :new_post
-
-- if authenticated?
-  = @current_user.who_follows
 
 %p
   %strong here's what the birdies are singing about right now:
