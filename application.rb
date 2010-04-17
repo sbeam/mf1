@@ -55,7 +55,6 @@ post '/chirp' do
     redirect '/'
 end
 
-
 get '/images/:grid_id' do
     @grid = Grid.new(DB)
     if img = @grid.get(Mongo::ObjectID::from_string(params[:grid_id]))
@@ -145,17 +144,11 @@ helpers do
       @auth.credentials[0] if authenticated?
   end
 
-  def logout
-      # ok with Sinatra, but won't work under shotgun due to RackException, giving up
-      #response.set_cookie('logout', {:value => "bar"})
-  end
-
   def following? (username)
       if authenticated? && User.exists?(username)
           @current_user.is_following?(username)
       end
   end
-  
 
 end
 

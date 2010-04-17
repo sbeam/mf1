@@ -110,3 +110,6 @@ ul.chirplisthome .user {
 .followedList {
     float: right;
 }
+.profile h3, .followers .follower {
+  background: #eee;
+}
