@@ -113,3 +113,7 @@ ul.chirplisthome .user {
 .profile h3, .followers .follower {
   background: #eee;
 }
+.chirp-pic img {
+    max-height: 200px;
+    max-width: 200px;
+}
