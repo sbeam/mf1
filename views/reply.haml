@@ -1,8 +1,7 @@
-- if @chirp.nil?
+- if @chirps[0].nil?
   No such post found.
 - else
-  %strong= @chirp['text']
-  %pre= @chirp.inspect
+  = partial :chirplist
 
   .postform
     %form{:action=>'/reply/'+@chirp['_id'].to_s, :method=>'POST',:enctype=>"multipart/form-data"}

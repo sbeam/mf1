@@ -1,4 +1,7 @@
 - if !@user.nil?
+  - if @user['pic']
+    .profile-pic
+      %img{:src => '/images/'+@user['pic'].to_s}
   %p 
     - if following?(@user['username'])
       You are following
@@ -7,6 +10,14 @@
       %a{:href => "/follow/#{@user['username']}"} 
         follow 
         %strong= @user['username']
+
+  - if @user['biography']
+    %h6 About
+    %p 
+      = @user['biography']
+      - if @user['website']
+        %a{:href => @user['website']}= @user[:website]
+
   %p 
     Here is what 
     %strong= @user['username']
@@ -46,7 +57,7 @@
 
           .user
             %a{:href => "/users/#{reply['user']}"}= reply['user']
-            %em= time_ago_in_words(chirp['created_at'])
+            %em= time_ago_in_words(reply['created_at'])
           .text
             = reply['text']
 

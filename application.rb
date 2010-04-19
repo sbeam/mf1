@@ -116,6 +116,7 @@ get '/reply/:chirp_id' do
         flash['error'] = 'No such chirp!'
         redirect '/'
     end
+    @chirps = [ @chirp ]
     haml :reply
 end
 

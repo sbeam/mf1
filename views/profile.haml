@@ -3,6 +3,10 @@
 .profile
   %h3= "%s's profile" % auth_username
 
+  - if @profile.get('pic')
+    .profile-pic
+      %img{:src => '/images/'+@profile.get('pic').to_s}
+
   =partial :followed_list
 
   .postform
