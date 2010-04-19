@@ -3,7 +3,7 @@
   %head
     %title= @title || SiteConfig.title
     %link{:type=>'text/css', :rel=>'stylesheet', :href=>'/css/screen.css'}
-  %body
+  %body{:style => "background-image: url(%s)" % get_user_bg(@user || auth_username) }
     #container
       #header
         #logo

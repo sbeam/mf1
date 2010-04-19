@@ -1,8 +1,33 @@
+= partial :signin_links
+
 .profile
   %h3= "%s's profile" % auth_username
 
+  =partial :followed_list
+
+  .postform
+    %form{:action=>'/profile', :method=>'POST',:enctype=>"multipart/form-data"}
+      %div
+        %label{:for => 'biog'} About you.
+        %textarea{:name=>'biog', :rows=>3}= @profile.get('biography')
+      %div
+        %label 
+          Your website.
+          %input{:name=>'url', :value=>@profile.get('website')}
+      %div
+        %label 
+          Your picture.
+          %input{:name=>'pic', :type=>'file' } 
+      %div
+        %label 
+          Your background.
+          %input{:name=>'background', :type=>'file' } 
+      %div
+        %input{:name=>'op_post', :type=>'submit', :value=>"update"}
+  
+
+
   .followers 
-    =partial :followed_list
 
     %h4 Followers
     - followers = @current_user.followers(auth_username)
@@ -11,8 +36,5 @@
         None yet. Sorry!
       - followers.each do |fo|
         = fo['username']
-
-
-  
 
 
