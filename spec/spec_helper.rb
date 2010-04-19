@@ -13,9 +13,9 @@ Sinatra::Base.set :logging, false
 require 'application'
 
 # establish in-memory database for testing
-DataMapper.setup(:default, "sqlite3::memory:")
+## TODO - MongoDB equiv - DataMapper.setup(:default, "sqlite3::memory:")
 
 Spec::Runner.configure do |config|
   # reset database before each example is run
-  config.before(:each) { DataMapper.auto_migrate! }
+  ## TODO - MongoDB equiv - config.before(:each) { DataMapper.auto_migrate! }
 end
