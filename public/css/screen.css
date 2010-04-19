@@ -109,6 +109,7 @@ ul.chirplisthome .user {
 
 .followedList {
     float: right;
+    max-width: 20%;
 }
 .profile h3, .followers .follower {
   background: #eee;
@@ -116,4 +117,16 @@ ul.chirplisthome .user {
 .chirp-pic img {
     max-height: 200px;
     max-width: 200px;
+}
+
+.replybtn a {
+    float: right;
+    border: 1px solid #aaa;
+    background: #ddd;
+    padding: 2px 8px;
+}
+
+.reply {
+    margin-left: 3em;
+    margin-top: 1em;
 }

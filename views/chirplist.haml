@@ -25,6 +25,11 @@
             - unless following?(chirp['user'])
               %a{:href => "/follow/#{chirp['user']}"} [follow]
 
+        - if authenticated?
+          .replybtn
+            %a{:href => '/reply/'+chirp['_id'].to_s} Reply
+
+
 
       - if chirp['file']
         .chirp-pic
@@ -34,6 +39,15 @@
         .clicky
           %a{:href => chirp['clicky'], :class=>'chirplink'}= chirp['clicky']
       %em 
-        posted 
         = time_ago_in_words(chirp['created_at'])
+
+      - chirp['replies'].each do |reply|
+        .reply
+
+          .user
+            %a{:href => "/users/#{reply['user']}"}= reply['user']
+            %em= time_ago_in_words(chirp['created_at'])
+          .text
+            = reply['text']
+
 

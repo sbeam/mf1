@@ -89,6 +89,28 @@ get '/profile' do
     haml :profile
 end
 
+get '/reply/:chirp_id' do
+    protect!
+    @chirp = DB['chirps'].find_one(:_id => Mongo::ObjectID::from_string(params[:chirp_id]))
+    if @chirp.nil? 
+        flash['error'] = 'No such chirp!'
+        redirect '/'
+    end
+    haml :reply
+end
+
+post '/reply/:chirp_id' do
+    protect!
+    @chirp = DB['chirps'].find_one(:_id => Mongo::ObjectID::from_string(params[:chirp_id]))
+    if @chirp.nil? 
+        flash['error'] = 'No such chirp!'
+        redirect '/'
+    end
+    @chirp['replies'].push({:user => auth_username, :text => params[:chirp], :created_at => Time.now.to_i})
+    DB['chirps'].save(@chirp)
+    flash['notice'] = 'Reply accepted!'
+    redirect '/'
+end
 
 helpers do
 

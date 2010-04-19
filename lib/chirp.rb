@@ -4,7 +4,9 @@ class Chirp
       @id = DB['chirps'].save({'user' => params[:user], 
                               'text' => params[:text], 
                               'clicky'=>params[:url],
-                              'created_at'=>Time.now.to_i})
+                              'created_at'=>Time.now.to_i,
+                              'replies' => []
+                              })
     end
 
     def save_upload(fname, tmpfile)

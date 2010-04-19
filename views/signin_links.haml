@@ -6,10 +6,9 @@
   - elsif authenticated?
     You are logged in as
     %strong= auth_username
+    %a{:href=>'/profile'} [profile]
     -# %a{:href => '/logout'} logout
   - else
     %a{:href => '/login'} Sign in
 
-  - if authenticated?
-    %a{:href=>'/profile'} [profile]
 

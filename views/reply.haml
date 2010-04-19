@@ -1,0 +1,14 @@
+- if @chirp.nil?
+  No such post found.
+- else
+  %strong= @chirp['text']
+  %pre= @chirp.inspect
+
+  .postform
+    %form{:action=>'/reply/'+@chirp['_id'].to_s, :method=>'POST',:enctype=>"multipart/form-data"}
+      %div
+        %label{:for => 'chirp'} Make your thoughts known.
+        %textarea{:name=>'chirp', :rows=>3} 
+      %div
+        %input{:name=>'op_post', :type=>'submit', :value=>"share"}
+
