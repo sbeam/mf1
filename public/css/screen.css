@@ -90,17 +90,50 @@ ul.chirplisthome .user {
     background: #eee;
     padding: 0.5em 1em;
 }
+.postform fieldset {
+    width: 30em;
+}
 .postform textarea, 
 .postform input {
     border: 1px solid #111;
     background: #fff;
 }
 .postform textarea {
-    width: 40em;
+    width: 30em;
     height: 5em;
+    font-family: sans;
+    margin: 0;
 }
 .postform label {
     display: block;
+}
+.postform .tab {
+    float: left;
+    width: 2em;
+    height: 2em;
+    border: 1px solid #444;
+    border-width: 0 1px 1px 1px;
+    margin: 0 10px;
+    cursor: pointer;
+}
+.postform .tab label {
+    display: none;
+    position: absolute;
+    padding: 0 .2em;
+    height: 2em;
+    background: #eee;
+    border: 1px solid #444;
+    border-width: 0 1px 1px 0;
+}
+.postform .tab:hover label {
+    display: block;
+}
+.postform .btn {
+    text-align: right;
+}
+.postform .btn input {
+    border: 2px outset #666;
+    font-size: 120%;
 }
 #openid_url {
   background: url(http://openid.net/login-bg.gif) no-repeat #FFF 5px;

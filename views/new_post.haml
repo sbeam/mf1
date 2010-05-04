@@ -1,15 +1,18 @@
 .postform
   %form{:action=>'/chirp', :method=>'POST',:enctype=>"multipart/form-data"}
-    %div
+    %fieldset
       %label{:for => 'chirp'} Say something.
       %textarea{:name=>'chirp', :rows=>3} 
-    %div
-      %label 
-        link something.
-        %input{:name=>'url', :value=>""}
-    %div
-      %label 
-        upload something.
-        %input{:name=>'pic', :type=>'file' } 
-    %div
-      %input{:name=>'op_post', :type=>'submit', :value=>"share"}
+
+      .tab
+        %label 
+          link something.
+          %input{:name=>'url', :value=>""}
+
+      .tab
+        %label 
+          upload something.
+          %input{:name=>'pic', :type=>'file' } 
+
+      .btn
+        %input{:name=>'op_post', :type=>'submit', :value=>"share"}
