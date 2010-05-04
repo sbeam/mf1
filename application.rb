@@ -46,6 +46,13 @@ end
 post '/chirp' do
     protect!
     @chirp = Chirp.new
+
+    if (params[:url])
+        if (! validate_url(params[:url]) )
+            flash[:error] = "That doesn't look like a proper link!"
+            redirect '/'
+        end
+    end
     @chirp.create(:text=>params[:chirp], :user=>auth_username, :url=>params[:url])
 
     if params[:pic] && (tmpfile = params[:pic][:tempfile]) && (name = params[:pic][:filename])
@@ -204,6 +211,13 @@ helpers do
       end
   end
 
+  def validate_url(url)
+      return url.match(URL_REGEXP)
+  end
+
 
 end
 
+URL_REGEXP = Regexp.new('\b ((https?|telnet|gopher|file|wais|ftp) : [\w/#~:.?+=&%@!\-] +?) (?=[.:?\-] * (?: [^\w/#~:.?+=&%@!\-]| $ ))', Regexp::EXTENDED)
+AT_REGEXP = Regexp.new('\s@[\w.@_-]+', Regexp::EXTENDED)
+  
