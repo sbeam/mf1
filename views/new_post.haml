@@ -4,15 +4,22 @@
       %label{:for => 'chirp'} Say something.
       %textarea{:name=>'chirp', :rows=>3} 
 
-      .tab
-        %label 
+      .tab.link
+        %label
           link something.
           %input{:name=>'url', :value=>""}
 
-      .tab
-        %label 
+      .tab.upload
+        %label
           upload something.
           %input{:name=>'pic', :type=>'file' } 
+
+      .tab.event
+        %label.event
+          schedule something.
+          %input{:name=>'title', :value=>""}
+          %input{:name=>'location', :value=>""}
+          %input{:name=>'time', :value=>""}
 
       .btn
         %input{:name=>'op_post', :type=>'submit', :value=>"share"}

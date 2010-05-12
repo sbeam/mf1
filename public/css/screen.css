@@ -87,7 +87,7 @@ ul.chirplisthome .user {
 
 .postform, .followedList, .searchResult {
     border: 1px solid #aaa;
-    background: #eee;
+    background: #e1e1e1;
     padding: 0.5em 1em;
 }
 .postform fieldset {
@@ -108,25 +108,45 @@ ul.chirplisthome .user {
     display: block;
 }
 .postform .tab {
+    position: relative;
     float: left;
-    width: 2em;
-    height: 2em;
-    border: 1px solid #444;
-    border-width: 0 1px 1px 1px;
-    margin: 0 10px;
+    width: 27px;
+    height: 27px;
+    margin: 4px 7px;
     cursor: pointer;
+    background-image: url(/img/backtopixel_full.png);
+    background-repeat: no-repeat;
 }
 .postform .tab label {
     display: none;
     position: absolute;
-    padding: 0 .2em;
-    height: 2em;
+    z-index: 11;
+    left: 27px;
+    padding: .4em 1em .4em 0.5em;
     background: #eee;
-    border: 1px solid #444;
-    border-width: 0 1px 1px 0;
+    border: 1px solid #ddd;
+    border-width: 1px 1px 1px 0;
 }
 .postform .tab:hover label {
     display: block;
+}
+.postform .link {
+    background-position: -58px -87px;
+}
+.postform .link:hover {
+    background-position: -58px -339px;
+}
+.postform .upload {
+    background-position: -198px -114px;
+}
+.postform .upload:hover {
+    background-position: -198px -366px;
+}
+.postform .event {
+    background-position: -198px -30px;
+}
+.postform .event:hover {
+    background-position: -198px -282px;
 }
 .postform .btn {
     text-align: right;
