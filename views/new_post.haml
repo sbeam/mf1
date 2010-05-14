@@ -1,25 +1,21 @@
 .postform
   %form{:action=>'/chirp', :method=>'POST',:enctype=>"multipart/form-data"}
     %fieldset
-      %label{:for => 'chirp'} Say something.
-      %textarea{:name=>'chirp', :rows=>3} 
+      .postmsg
+        %label{:for => 'chirp'} Say something.
+        %textarea{:name=>'chirp', :rows=>3} 
 
-      .tab.link
-        %label
-          link something.
-          %input{:name=>'url', :value=>""}
+      .tabs
 
-      .tab.upload
-        %label
-          upload something.
-          %input{:name=>'pic', :type=>'file' } 
+        .tab.link
+          %label
+            link something.
+            %input{:name=>'url', :value=>""}
 
-      .tab.event
-        %label.event
-          schedule something.
-          %input{:name=>'title', :value=>""}
-          %input{:name=>'location', :value=>""}
-          %input{:name=>'time', :value=>""}
+        .tab.upload
+          %label
+            upload something.
+            %input{:name=>'pic', :type=>'file' } 
 
       .btn
         %input{:name=>'op_post', :type=>'submit', :value=>"share"}

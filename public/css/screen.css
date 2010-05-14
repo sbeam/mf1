@@ -91,11 +91,15 @@ ul.chirplisthome .user {
     padding: 0.5em 1em;
 }
 .postform fieldset {
-    width: 30em;
+    color: #222;
+    position: relative;
+    margin: 0;
+    border: 0;
+    padding: 15px;
 }
 .postform textarea, 
 .postform input {
-    border: 1px solid #111;
+    border: 1px solid #eee;
     background: #fff;
 }
 .postform textarea {
@@ -107,9 +111,17 @@ ul.chirplisthome .user {
 .postform label {
     display: block;
 }
-.postform .tab {
+.postform .postmsg {
     position: relative;
     float: left;
+}
+.postform .tabs {
+    float: left;
+    width: 27px;
+    margin-top: 2em;
+}
+.postform .tab {
+    position: relative;
     width: 27px;
     height: 27px;
     margin: 4px 7px;
@@ -149,7 +161,9 @@ ul.chirplisthome .user {
     background-position: -198px -282px;
 }
 .postform .btn {
-    text-align: right;
+    position: absolute;
+    bottom: 0;
+    right: 15px;
 }
 .postform .btn input {
     border: 2px outset #666;
