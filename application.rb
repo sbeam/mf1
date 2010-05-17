@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'sinatra'
 require 'environment'
-require 'rack-flash'
 
 enable :sessions
 use Rack::Flash
@@ -45,18 +44,20 @@ end
 
 post '/chirp' do
     protect!
-    @chirp = Chirp.new
-
     if (params[:url])
         if (! validate_url(params[:url]) )
             flash[:error] = "That doesn't look like a proper link!"
             redirect '/'
         end
     end
-    @chirp.create(:text=>params[:chirp], :user=>auth_username, :url=>params[:url])
+    @chirp = Chirp.create(:text=>params[:chirp], :user=>auth_username, :url=>params[:url])
 
     if params[:pic] && (tmpfile = params[:pic][:tempfile]) && (name = params[:pic][:filename])
         @chirp.save_upload(name, tmpfile)
+    end
+
+    if @chirp.save!
+        flash[:notice] = "Accepted."
     end
     
     redirect '/'
@@ -196,6 +197,8 @@ helpers do
   end
 
   def time_ago_in_words(timestamp)
+      timestamp = timestamp.to_i if timestamp.is_a? Time
+
       minutes = (((Time.now.to_i - timestamp).abs)/60).round
       return nil if minutes < 0
 

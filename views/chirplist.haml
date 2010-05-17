@@ -52,7 +52,7 @@
       %em 
         = time_ago_in_words(chirp['created_at'])
 
-      - chirp['replies'].each do |reply|
+      - chirp['replies'] and chirp['replies'].each do |reply|
         .reply
 
           .user

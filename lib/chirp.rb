@@ -1,13 +1,15 @@
 class Chirp
+    include MongoMapper::Document
+    set_database_name DB_NAME
 
-    def create(params)
-      @id = DB['chirps'].save({'user' => params[:user], 
-                              'text' => params[:text], 
-                              'clicky'=>params[:url],
-                              'created_at'=>Time.now.to_i,
-                              'replies' => []
-                              })
-    end
+    key :text, String, :required => true
+    key :clicky, String
+    #key :created_at, Time, :required => true
+    key :active, Boolean
+    timestamps!
+    
+
+    #before_create :set_time  
 
     def save_upload(fname, tmpfile)
         @grid = Grid.new(DB)
@@ -23,7 +25,12 @@ class Chirp
         end
         DB['chirps'].find(conditions, {:sort=>[['created_at','descending']], :limit=>limit}).collect
     end
+    private  
 
+
+    def set_time   
+        self[:created_at] = Time.now.to_i
+    end 
 
 end
 
