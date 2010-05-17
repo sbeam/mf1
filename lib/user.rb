@@ -33,7 +33,7 @@ class User
 
     def attach_file(key, filename, tmpfile)
         @grid = Grid.new(DB)
-        file_id = @grid.put(tmpfile, filename, :safe => true)
+        file_id = @grid.put(tmpfile, { :filename => filename, :safe => true })
         set(key, file_id)
     end
 

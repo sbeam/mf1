@@ -1,14 +1,15 @@
 body {
-  background: #eee;
-  color: #333;
+  background: #fff;
+  color: #222;
   font-family: Verdana, Arial, Helvetica, sans-serif;
   background: url(/waxwings.jpg) fixed no-repeat;
 }
+/* kuler Add 2 #887994 */
 a {
-    color: #08b;
+    color: #1c3a4c;
 }
 .postform {
-    margin: 20px 0;
+    margin: 20px 26% 20px 0;
 }
 #container {
   margin: 0 auto;
@@ -18,7 +19,7 @@ a {
   padding: 0.5em 0 0 0;
   margin: 0;
   text-align: center;
-  border-bottom: 3px solid #000;
+  border-bottom: 3px solid #1c3a4c;
 }
 #content {
   padding: 0;
@@ -48,7 +49,7 @@ p {
   background: #eee;
 }
 .signin {
-    background: #eee;
+    background: #fff;
 }
 .userNotice {
     font-weight: bold;
@@ -57,7 +58,7 @@ p {
 .userError {
     font-weight: bold;
     background: #eee;
-    color: #b80;
+    color: #bf2d1f;
 }
 a {
   font-weight: bold;
@@ -73,22 +74,29 @@ ul.chirplisthome {
     list-style: none;
     margin:0;
     padding: 0;
+    margin-right: 26%;
 }
 ul.chirplisthome li {
-    border-top: 1px solid #08b;
+    border-top: 1px solid #1c3a4c;
     padding: 0.5em 1em;
-    background: #eee;
+    background: #809ca8;
+	-webkit-border-bottom-right-radius:6px; 
+	-moz-border-radius-bottomright:6px; 
+	-webkit-border-bottom-left-radius:6px; 
+	-moz-border-radius-bottomleft:6px; 
     margin: 0.5em 0;
 }
 ul.chirplisthome .user {
-    border-bottom: 1px dashed #aaa;
-    padding-bottom: 0.1em;
+    border-bottom: 1px solid #1c3a4c;
 }
 
 .postform, .followedList, .searchResult {
-    border: 1px solid #aaa;
-    background: #e1e1e1;
+    background: #f2e8b3;
     padding: 0.5em 1em;
+	border:1px solid rgba(0, 0, 0, 0.25); 
+	-webkit-border-radius:6px; 
+	-moz-border-radius:6px; 
+    border-color: #3d2f27;
 }
 .postform fieldset {
     color: #222;
@@ -103,10 +111,11 @@ ul.chirplisthome .user {
     background: #fff;
 }
 .postform textarea {
-    width: 30em;
-    height: 5em;
+    width: 28em;
+    height: 4em;
     font-family: sans;
     margin: 0;
+    padding: 0.5em;
 }
 .postform label {
     display: block;
@@ -133,11 +142,13 @@ ul.chirplisthome .user {
     display: none;
     position: absolute;
     z-index: 11;
-    left: 27px;
-    padding: .4em 1em .4em 0.5em;
-    background: #eee;
-    border: 1px solid #ddd;
+    left: 0;
+    padding: .4em 1em .4em 30px;
+    background: #809ca8;
+    border: 1px solid #1c3a4c;
     border-width: 1px 1px 1px 0;
+	-webkit-border-radius:6px; 
+	-moz-border-radius:6px; 
 }
 .postform .tab:hover label {
     display: block;
@@ -161,14 +172,32 @@ ul.chirplisthome .user {
     background-position: -198px -282px;
 }
 .postform .btn {
-    position: absolute;
-    bottom: 0;
-    right: 15px;
+    text-align: right;
 }
-.postform .btn input {
-    border: 2px outset #666;
+.btn input {
     font-size: 120%;
+	font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; 
+	background: #332720;
+	border:1px solid rgba(0, 0, 0, 0.25); 
+	color: #fff; 
+	padding: 6px 10px 7px 10px; 
+	text-shadow: 0px -1px 1px #69993c;
+	-webkit-border-radius:6px; 
+	-moz-border-radius:6px; 
+	font-weight:bold;
+	cursor:pointer;
+	margin:0px;
+    
+    
 }
+.btn input:hover {
+	background: #3d2f27;
+}
+.postform .btn {
+    padding-top: 20px;
+    clear: left;
+}
+
 #openid_url {
   background: url(http://openid.net/login-bg.gif) no-repeat #FFF 5px;
   padding-left: 25px;
@@ -177,6 +206,7 @@ ul.chirplisthome .user {
 .followedList {
     float: right;
     max-width: 20%;
+    margin-top: 20px;
 }
 .profile h3, .followers .follower {
   background: #eee;
@@ -192,12 +222,20 @@ ul.chirplisthome .user {
 
 .replybtn a {
     float: right;
-    border: 1px solid #aaa;
-    background: #ddd;
+    border: 1px solid #1c3a4c;
+    background: #809ca8;
     padding: 2px 8px;
+	-webkit-border-bottom-right-radius:6px; 
+	-moz-border-radius-bottomright:6px; 
+	-webkit-border-bottom-left-radius:6px; 
+	-moz-border-radius-bottomleft:6px; 
 }
 
 .reply {
-    margin-left: 3em;
+    margin-left: 1em;
     margin-top: 1em;
 }
+ul.chirplisthome .reply .user {
+    border-bottom: 1px dashed #1c3a4c;
+}
+

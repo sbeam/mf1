@@ -6,9 +6,6 @@
 .dopost
   = partial :new_post
 
-%p
-  %strong here's what the birdies are singing about right now:
-
 - if @chirps.length > 0
   = partial :chirplist
 

@@ -11,7 +11,7 @@ class Chirp
 
     def save_upload(fname, tmpfile)
         @grid = Grid.new(DB)
-        file_id = @grid.put(tmpfile, fname, :safe => true)
+        file_id = @grid.put(tmpfile, { :filename => fname, :safe => true } )
         res = DB['chirps'].update({:_id=>@id}, {'$set'=>{:file=> file_id}}, {:multi=>true})
     end
 

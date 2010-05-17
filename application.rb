@@ -64,7 +64,7 @@ end
 
 get '/images/:grid_id' do
     @grid = Grid.new(DB)
-    if img = @grid.get(Mongo::ObjectID::from_string(params[:grid_id]))
+    if img = @grid.get(BSON::ObjectID::from_string(params[:grid_id]))
         headers 'Content-Type' => img.content_type,
                 'Last-Modified' => img.upload_date.httpdate,
                 'X-UA-Compatible' => 'IE=edge'
@@ -118,7 +118,7 @@ end
 
 get '/reply/:chirp_id' do
     protect!
-    @chirp = DB['chirps'].find_one(:_id => Mongo::ObjectID::from_string(params[:chirp_id]))
+    @chirp = DB['chirps'].find_one(:_id => BSON::ObjectID::from_string(params[:chirp_id]))
     if @chirp.nil? 
         flash['error'] = 'No such chirp!'
         redirect '/'
@@ -129,7 +129,7 @@ end
 
 post '/reply/:chirp_id' do
     protect!
-    @chirp = DB['chirps'].find_one(:_id => Mongo::ObjectID::from_string(params[:chirp_id]))
+    @chirp = DB['chirps'].find_one(:_id => BSON::ObjectID::from_string(params[:chirp_id]))
     if @chirp.nil? 
         flash['error'] = 'No such chirp!'
         redirect '/'
