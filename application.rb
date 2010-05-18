@@ -35,8 +35,8 @@ end
 get '/users/:username' do
     ask_for_auth!
     if User.exists?(params[:username])
-        @chirps = DB['chirps'].find({:user => params[:username]},
-                                    {:sort=>[['created_at','descending']]}).collect
+        @chirps = Chirp.all(:conditions => {:user => params[:username]},
+                            :order=>'created_at desc')
         @user = DB['users'].find_one({:username => params[:username]})
     end
     haml :chirplist
@@ -50,10 +50,13 @@ post '/chirp' do
             redirect '/'
         end
     end
+    if "http://".eql?(params[:url].downcase)
+        params[:url] = nil
+    end
     @chirp = Chirp.create(:text=>params[:chirp], :user=>auth_username, :url=>params[:url])
 
-    if params[:pic] && (tmpfile = params[:pic][:tempfile]) && (name = params[:pic][:filename])
-        @chirp.save_upload(name, tmpfile)
+    if params[:pic] && (tmpfile = params[:pic][:tempfile])
+        @chirp.pic = params[:pic][:tempfile]
     end
 
     if @chirp.save!
@@ -119,7 +122,7 @@ end
 
 get '/reply/:chirp_id' do
     protect!
-    @chirp = DB['chirps'].find_one(:_id => BSON::ObjectID::from_string(params[:chirp_id]))
+    @chirp = Chirp.find_by_id(params[:chirp_id])
     if @chirp.nil? 
         flash['error'] = 'No such chirp!'
         redirect '/'
@@ -130,14 +133,14 @@ end
 
 post '/reply/:chirp_id' do
     protect!
-    @chirp = DB['chirps'].find_one(:_id => BSON::ObjectID::from_string(params[:chirp_id]))
+    @chirp = Chirp.find_by_id(params[:chirp_id])
     if @chirp.nil? 
         flash['error'] = 'No such chirp!'
         redirect '/'
     end
-    @chirp['replies'].push({:user => auth_username, :text => params[:chirp], :created_at => Time.now.to_i})
-    DB['chirps'].save(@chirp)
-    flash['notice'] = 'Reply accepted!'
+    if @chirp.add_reply(params[:chirp], auth_username)
+        flash['notice'] = 'Reply accepted!'
+    end
     redirect '/'
 end
 

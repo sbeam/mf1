@@ -4,6 +4,7 @@ require 'ostruct'
 require 'mongo'
 require 'mongo_mapper'
 require 'rack-flash'
+require 'joint'
 
 require 'sinatra' unless defined?(Sinatra)
 include Mongo

@@ -2,35 +2,33 @@ class Chirp
     include MongoMapper::Document
     set_database_name DB_NAME
 
+    plugin Joint
+
     key :text, String, :required => true
     key :clicky, String
-    #key :created_at, Time, :required => true
     key :active, Boolean
+    key :user, String
+
+    key :replies, Array, :index => true
+    #many :replies, :class_name => 'Chirp'
+
     timestamps!
     
+    attachment :pic
 
-    #before_create :set_time  
-
-    def save_upload(fname, tmpfile)
-        @grid = Grid.new(DB)
-        file_id = @grid.put(tmpfile, { :filename => fname, :safe => true } )
-        res = DB['chirps'].update({:_id=>@id}, {'$set'=>{:file=> file_id}}, {:multi=>true})
+    def add_reply(text, username)
+        self.replies << {:user => username, :text => text, :created_at => Time.now}
+        save
     end
-
 
     def self.latest(limit=50, userlist=[])
-        conditions = {}
-        if userlist.count > 0
-            conditions = {:user => {:$in => userlist}}
+        if userlist.is_a?(Array) && userlist.count > 0
+            all(:conditions => { :user => userlist }, :order => 'created_at desc', :limit => limit)
+        else
+            all(:order => 'created_at desc', :limit => limit)
         end
-        DB['chirps'].find(conditions, {:sort=>[['created_at','descending']], :limit=>limit}).collect
     end
-    private  
 
-
-    def set_time   
-        self[:created_at] = Time.now.to_i
-    end 
 
 end
 

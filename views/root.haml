@@ -6,7 +6,7 @@
 .dopost
   = partial :new_post
 
-- if @chirps.length > 0
+- if !@chirps.nil? and @chirps.length > 0
   = partial :chirplist
 
 - else
