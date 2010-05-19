@@ -58,9 +58,12 @@ post '/login/openid' do
     else
       # You could request additional information here - see specs:
       # http://openid.net/specs/openid-simple-registration-extension-1_0.html
-      oidreq.add_extension_arg('sreg','required','nickname')
+      #oidreq.add_extension_arg('sreg','required','email')
       # oidreq.add_extension_arg('sreg','optional','fullname, email')
-      
+       
+       
+      add_simple_registration_fields(oidreq, { :required => 'email', :optional => ['nickname','dob'] })
+       
       # Send request - first parameter: Trusted Site,
       # second parameter: redirect target
       redirect oidreq.redirect_url(root_url, root_url + "/login/openid/complete")
@@ -94,12 +97,30 @@ get '/login/openid/complete' do
         session[:openid_display_identifier] = oidresp.display_identifier
         session[:openid_nick] = params['openid.sreg.nickname']
 
-        params.inspect
+
+        if is_google_federated_login?(oidresp)
+            registration = OpenID::AX::FetchResponse.from_success_response(oidresp)
+        else
+            registration = OpenID::SReg::Response.from_success_response(oidresp)
+        end
+
+
+        if registration.class.to_s == "OpenID::AX::FetchResponse"
+          email = registration['http://schema.openid.net/contact/email']
+        else
+          email = registration['email']
+        end
+        
+
+        @reg = registration
+
+        email
 
         #flash[:notice] = "OpenID login successful."
         #redirect '/'
     end
 end
+
 
 
 
@@ -291,6 +312,28 @@ helpers do
       return url.match(URL_REGEXP)
   end
 
+  def add_simple_registration_fields(open_id_request, fields)
+      if is_google_federated_login?(open_id_request)
+          ax_request = OpenID::AX::FetchRequest.new
+          # Only the email attribute is currently supported by google federated login
+          email_attr = OpenID::AX::AttrInfo.new('http://schema.openid.net/contact/email', 'email', true)
+          ax_request.add(email_attr)
+          open_id_request.add_extension(ax_request)
+      else
+          sreg_request = OpenID::SReg::Request.new
+          sreg_request.request_fields(Array(fields[:required]).map(&:to_s), true) if fields[:required]
+          sreg_request.request_fields(Array(fields[:optional]).map(&:to_s), false) if fields[:optional]
+          sreg_request.policy_url = fields[:policy_url] if fields[:policy_url]
+
+          open_id_request.add_extension(sreg_request)
+      end
+  end
+
+  def is_google_federated_login?(request_response)
+      return request_response.endpoint.server_url == "https://www.google.com/accounts/o8/ud"
+  end
+  
+  
 
 end
 

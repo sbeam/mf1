@@ -1,3 +1,4 @@
 auth
 *.sw[op]
 log/*.log
+tmp/*

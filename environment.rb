@@ -5,6 +5,8 @@ require 'mongo'
 require 'mongo_mapper'
 require 'rack-flash'
 require 'joint'
+require 'openid/extensions/sreg'
+require 'openid/extensions/ax'
 
 require 'sinatra' unless defined?(Sinatra)
 include Mongo
@@ -29,4 +31,10 @@ configure do
   Dir.glob("#{File.dirname(__FILE__)}/lib/*.rb") { |lib| require File.basename(lib, '.*') }
 
   APP_ROOT = File.dirname(__FILE__)
+
+  FileUtils.mkdir_p 'log' unless File.exists?('log')
+  log = File.new("log/sinatra.log", "a+")
+  $stdout.reopen(log)
+  $stderr.reopen(log)
+
 end
