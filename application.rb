@@ -34,8 +34,7 @@ get '/login' do
     haml :login
 end
 
-post '/login' do
-    openid_begin params[:openid_url]
+post '/login' do # process PO login
     haml :login
 end
 
@@ -56,7 +55,7 @@ post '/login/openid' do
     rescue OpenID::DiscoveryFailure => why
       "Sorry, we couldn't find your identifier '#{openid}'"
     else
-      add_simple_registration_fields(oidreq, { :required => 'email', :optional => ['nickname','dob'] })
+      add_simple_registration_fields(oidreq, { :required => 'email', :optional => 'nickname' })
        
       # Send request - first parameter: Trusted Site,
       # second parameter: redirect target
@@ -82,8 +81,6 @@ get '/login/openid/complete' do
         redirect '/login'
 
     when OpenID::Consumer::SUCCESS
-        session[:openid_display_identifier] = oidresp.display_identifier
-        session[:openid_nick] = params['openid.sreg.nickname']
 
         if is_google_federated_login?(oidresp)
             registration = OpenID::AX::FetchResponse.from_success_response(oidresp)
@@ -92,17 +89,24 @@ get '/login/openid/complete' do
         end
 
         if registration.class.to_s == "OpenID::AX::FetchResponse"
-          email = registration['http://schema.openid.net/contact/email']
+            reginfo = { :email => registration['http://schema.openid.net/contact/email'] }
         else
-          email = registration['email']
+            reginfo = { :email => registration['email'], :nick => registration['nickname'] }
         end
 
-        @reg = registration
+        @user = User.find_by_openid_url(oidresp.identity_url)
+        @user ||= User.create_from_openid(oidresp, reginfo)
 
-        email
+        session[:user_id] = @user.id
+        session[:openid_display_identifier] = oidresp.display_identifier
 
-        #flash[:notice] = "OpenID login successful."
-        #redirect '/'
+        if reginfo[:email] and reginfo[:nickname]
+            flash[:notice] = "Hello, %s, nice to see you. Your OpenID login was successful." % reginfo[:nickname]
+            redirect '/'
+        else
+            flash[:notice] = "Hello! Your OpenID login was successful, but we need a little more info."
+            redirect '/profile'
+        end
     end
 end
 
