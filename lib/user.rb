@@ -11,6 +11,8 @@ class User
     key :following, Array
     key :openid_display_identifier, String
     key :openid_url, String, :index => true
+    key :biography, String
+    key :website, String
     timestamps!
 
     attachment :avatar
@@ -42,8 +44,5 @@ class User
       end
     end
 
-    def followers(un)
-        find(:conditions => { :following => [un] })
-    end
 
 end

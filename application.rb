@@ -146,7 +146,11 @@ end
 
 get '/images/:grid_id' do
     @grid = Grid.new(DB)
-    if img = @grid.get(BSON::ObjectID::from_string(params[:grid_id]))
+
+    grid_id = params[:grid_id][/^[^.]+/]
+    puts grid_id
+
+    if img = @grid.get(BSON::ObjectID::from_string(grid_id))
         headers 'Content-Type' => img.content_type,
                 'Last-Modified' => img.upload_date.httpdate,
                 'X-UA-Compatible' => 'IE=edge'
@@ -176,19 +180,20 @@ end
 
 get '/profile' do
     protect!
-    @profile = User.new(auth_username)
+    @profile = @current_user
     haml :profile
 end
 
 post '/profile' do
     protect!
-    @profile = User.new(auth_username)
-    @profile.set('biography', params[:biog])
-    @profile.set('website', params[:url])
+    @profile = User.find_by_username(auth_username)
+    @profile.biography = params[:biog]
+    @profile.website = params[:url]
 
-    [:pic, :background].each do |file|
-        if params[file] && (tmpfile = params[file][:tempfile]) && (name = params[file][:filename])
-            @profile.attach_file(file, name, tmpfile)
+    [:avatar, :background].each do |file|
+        if params[file] && (tmpfile = params[file][:tempfile])
+            # hmm, send() worked, and this is obviously ugly, but wha?
+            @profile.send(file.to_s+'=', params[file][:tempfile])
         end
     end
 
@@ -229,7 +234,7 @@ helpers do
         @openid_consumer ||= OpenID::Consumer.new(session,
                                                   OpenID::Store::Filesystem.new("#{APP_ROOT}/tmp/openid"))
     end
-    
+
 
     def protect!
         unless authenticated?
@@ -243,83 +248,97 @@ helpers do
         session[:user_id] && @current_user = User.find_by_id(session[:user_id])
     end
 
-  def auth_username
-      @auth.credentials[0] if authenticated?
-  end
+    def auth_username
+        @current_user.username if authenticated?
+    end
 
-  def following? (username)
-      if authenticated? && User.exists?(username)
-          @current_user.is_following?(username)
-      end
-  end
+    def following? (username)
+        if authenticated? && User.exists?(username)
+            @current_user.is_following?(username)
+        end
+    end
 
-  def get_user_bg(username)
-      unless username.nil?
-          username = username['username'] unless username.is_a? String
-          if User.exists?(username)
-              user = User.find_by_username(username)
-              id = user.background_id
-              unless id.nil?
-                  return "/images/%s" % id.to_s 
-              end
-          end
-      end
-      '/waxwings.jpg'
-  end
+    def get_user_bg(username)
+        unless username.nil?
+            username = username['username'] unless username.is_a? String
+            if User.exists?(username)
+                user = User.find_by_username(username)
+                id = user.background_id
+                unless id.nil?
+                    return "/images/%s" % id.to_s 
+                end
+            end
+        end
+        '/waxwings.jpg'
+    end
 
-  def root_url
-      request.url.match(/(^.*\/{2}[^\/]*)/)[1]
-  end
+    def root_url
+        request.url.match(/(^.*\/{2}[^\/]*)/)[1]
+    end
 
-  # Usage: partial :foo
-  def partial(page, options={})
-    haml page, options.merge!(:layout => false)
-  end
+    # Usage: partial :foo
+    def partial(page, options={})
+        haml page, options.merge!(:layout => false)
+    end
 
-  def time_ago_in_words(timestamp)
-      timestamp = timestamp.to_i if timestamp.is_a? Time
+    def time_ago_in_words(timestamp)
+        timestamp = timestamp.to_i if timestamp.is_a? Time
 
-      minutes = (((Time.now.to_i - timestamp).abs)/60).round
-      return nil if minutes < 0
+        minutes = (((Time.now.to_i - timestamp).abs)/60).round
+        return nil if minutes < 0
 
-      case minutes
-      when 0 then 'less than a minute ago'
-      when 0..4 then 'less than 5 minutes ago'
-      when 5..49 then minutes.to_s + ' minutes ago'
-      when 50..70 then 'about 1 hour ago'
-      when 70..119 then 'over 1 hour ago'
-      when 120..239 then 'more than 2 hours ago'
-      when 240..1440 then 'about '+(minutes/60).round.to_s+' hours ago'
-      else Time.at(timestamp).strftime('%I:%M %p %d-%b-%Y')
-      end
-  end
+        case minutes
+        when 0 then 'less than a minute ago'
+        when 0..4 then 'less than 5 minutes ago'
+        when 5..49 then minutes.to_s + ' minutes ago'
+        when 50..70 then 'about 1 hour ago'
+        when 70..119 then 'over 1 hour ago'
+        when 120..239 then 'more than 2 hours ago'
+        when 240..1440 then 'about '+(minutes/60).round.to_s+' hours ago'
+        else Time.at(timestamp).strftime('%I:%M %p %d-%b-%Y')
+        end
+    end
 
-  def validate_url(url)
-      return url.match(URL_REGEXP)
-  end
+    def validate_url(url)
+        return url.match(URL_REGEXP)
+    end
 
-  def add_simple_registration_fields(open_id_request, fields)
-      if is_google_federated_login?(open_id_request)
-          ax_request = OpenID::AX::FetchRequest.new
-          # Only the email attribute is currently supported by google federated login
-          email_attr = OpenID::AX::AttrInfo.new('http://schema.openid.net/contact/email', 'email', true)
-          ax_request.add(email_attr)
-          open_id_request.add_extension(ax_request)
-      else
-          sreg_request = OpenID::SReg::Request.new
-          sreg_request.request_fields(Array(fields[:required]).map(&:to_s), true) if fields[:required]
-          sreg_request.request_fields(Array(fields[:optional]).map(&:to_s), false) if fields[:optional]
-          sreg_request.policy_url = fields[:policy_url] if fields[:policy_url]
+    def add_simple_registration_fields(open_id_request, fields)
+        if is_google_federated_login?(open_id_request)
+            ax_request = OpenID::AX::FetchRequest.new
+            # Only the email attribute is currently supported by google federated login
+            email_attr = OpenID::AX::AttrInfo.new('http://schema.openid.net/contact/email', 'email', true)
+            ax_request.add(email_attr)
+            open_id_request.add_extension(ax_request)
+        else
+            sreg_request = OpenID::SReg::Request.new
+            sreg_request.request_fields(Array(fields[:required]).map(&:to_s), true) if fields[:required]
+            sreg_request.request_fields(Array(fields[:optional]).map(&:to_s), false) if fields[:optional]
+            sreg_request.policy_url = fields[:policy_url] if fields[:policy_url]
 
-          open_id_request.add_extension(sreg_request)
-      end
-  end
+            open_id_request.add_extension(sreg_request)
+        end
+    end
 
-  def is_google_federated_login?(request_response)
-      return request_response.endpoint.server_url == "https://www.google.com/accounts/o8/ud"
-  end
-  
-  
+    def is_google_federated_login?(request_response)
+        return request_response.endpoint.server_url == "https://www.google.com/accounts/o8/ud"
+    end
+
+    def get_followers_for_user(username)
+        User.find(:conditions => { :following => [username] })
+    end
+
+    def image_fileext_by_mime(mime)
+        case mime
+        when 'image/gif' then 'gif'
+        when 'image/jpeg' then 'jpeg'
+        when 'image/png' then 'png'
+        end
+    end
+
+    def db_image_src(pic)
+        '/images/%s.%s' % [pic.id, image_fileext_by_mime(pic.type)]
+    end 
 
 end
 

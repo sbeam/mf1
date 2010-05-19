@@ -3,9 +3,9 @@
 .profile
   %h3= "%s's profile" % auth_username
 
-  - if @profile.get('pic')
+  - if @profile.avatar
     .profile-pic
-      %img{:src => '/images/'+@profile.get('pic').to_s}
+      %img{:src => db_image_src(@profile.avatar)}
 
   =partial :followed_list
 
@@ -13,15 +13,15 @@
     %form{:action=>'/profile', :method=>'POST',:enctype=>"multipart/form-data"}
       %div
         %label{:for => 'biog'} About you.
-        %textarea{:name=>'biog', :rows=>3}= @profile.get('biography')
+        %textarea{:name=>'biog', :rows=>3}= @profile.biography
       %div
         %label 
           Your website.
-          %input{:name=>'url', :value=>@profile.get('website')}
+          %input{:name=>'url', :value=>@profile.website}
       %div
         %label 
           Your picture.
-          %input{:name=>'pic', :type=>'file' } 
+          %input{:name=>'avatar', :type=>'file' } 
       %div
         %label 
           Your background.
@@ -34,11 +34,12 @@
   .followers 
 
     %h4 Followers
-    - followers = @current_user.followers(auth_username)
+    - followers = get_followers_for_user(auth_username)
     .follower
-      - if followers.count == 0 
+      - if followers.nil? or followers.count == 0 
         None yet. Sorry!
-      - followers.each do |fo|
-        = fo['username']
+      - else
+        - followers.each do |fo|
+          = fo['username']
 
 

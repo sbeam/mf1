@@ -44,7 +44,7 @@
 
       - if chirp['pic_id']
         .chirp-pic
-          %img{:src => '/images/'+chirp['pic_id'].to_s}
+          %img{:src => db_image_src(chirp.pic)}
       .chirp= chirp['text']
       - if chirp['clicky']
         .clicky
