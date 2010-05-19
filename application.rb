@@ -18,10 +18,10 @@ end
 
 get '/' do
     ask_for_auth! # TODO poor little Safari needs this
-    if @current_user.nil? or @current_user.who_follows.empty?
+    if @current_user.nil? or @current_user.following.empty?
         @chirps = Chirp.latest(10)
     else
-        @chirps = Chirp.latest(10, @current_user.who_follows << auth_username)
+        @chirps = Chirp.latest(10, @current_user.following << auth_username)
     end
 
     haml :root
@@ -162,9 +162,13 @@ helpers do
   def authenticated?
     @auth ||=  Rack::Auth::Basic::Request.new(request.env)
     if @auth.provided? && @auth.basic? && @auth.credentials 
-        @current_user = User.new(@auth.credentials[0])
+
+        @current_user = User.find_by_username(@auth.credentials[0])
         if @current_user && @current_user.check(@auth.credentials)
             session[:did_auth] = 1
+        else
+           @current_user = User.create(:username => @auth.credentials[0], :password => @auth.credentials[1])
+           @current_user.save
         end
     end
   end
@@ -183,8 +187,8 @@ helpers do
       unless username.nil?
           username = username['username'] unless username.is_a? String
           if User.exists?(username)
-              user = User.new(username)
-              id = user.get('background')
+              user = User.find_by_username(username)
+              id = user.background_id
               unless id.nil?
                   return "/images/%s" % id.to_s 
               end

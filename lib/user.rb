@@ -1,48 +1,34 @@
-
 class User
 
-    def initialize(username)
-        @user_record = DB['users'].find_one(:username => username)
-    end
+    include MongoMapper::Document
+    set_database_name DB_NAME
 
-    
-    def self.exists?(un)
-        DB['users'].find(:username => un).count
-    end
+    plugin Joint
+
+    key :username, String, :required => true
+    key :password, String, :required => true
+    key :active, Boolean
+    key :following, Array
+    timestamps!
+
+    attachment :avatar
+    attachment :background
+
+    before_save :cryptpass
 
     # TODO don't use weak DES crypt
-    def create(params)
-      id = DB['users'].save({'username' => params[:username], 
-                             'password' => params[:password].crypt((rand*100).to_s), 
-                             'following' => [],
-                             'created_at'=>Time.now.to_i})
-      initialize(params[:username]) 
+    def cryptpass
+        !self.password.nil? && self.password = self.password.crypt((rand*100).to_s)
+        self.active = true
     end
-
-    def get(field)
-        @user_record[field] if @user_record && @user_record[field]
-    end
-
-    def set(field, value)
-        @user_record[field] = value
-    end
-
-    def save
-        DB['users'].save(@user_record) if @user_record
-    end
-
-    def attach_file(key, filename, tmpfile)
-        @grid = Grid.new(DB)
-        file_id = @grid.put(tmpfile, { :filename => filename, :safe => true })
-        set(key, file_id)
+    
+    def self.exists?(un)
+        find_by_username(un)
     end
 
     # creds = [username, pass]
     def check(creds)
-        if @user_record.nil?
-            create({:username => creds[0], :password => creds[1]})
-        end
-        creds[1].crypt(@user_record['password']) == @user_record['password']
+        creds[1].crypt(password) == password
     end
 
     def is_following?(username)
@@ -53,12 +39,8 @@ class User
       end
     end
 
-    def who_follows
-        @user_record['following']
-    end
-
     def followers(un)
-        DB['users'].find(:following => un)
+        find(:conditions => { :following => [un] })
     end
 
 end
