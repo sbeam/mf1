@@ -29,13 +29,17 @@ $.fn.openid = function() {
     var $li = $(this);
     $li.parent().find('li').removeClass('highlight');
     $li.addClass('highlight');
+
+    $('.login .userNotice').text('Please wait for transfer to '+$('li.highlight').attr('title')+'...');
+
     $usrfs.fadeOut();
-    $idfs.fadeOut();
+    $idfs.show();
 
     $this.unbind('submit').submit(function() {
       $id.val($this.find("li.highlight span").text());
     });
     $this.submit();
+
     return false;
   };
 

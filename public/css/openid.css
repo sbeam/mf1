@@ -1,6 +1,11 @@
 ﻿
 .login {
     background: #e1e1e1;
+    padding: 0 1em;
+}
+.login form {
+    clear: both;
+    padding: 1em 0;
 }
 
 form.openid ul { 
@@ -10,13 +15,17 @@ form.openid ul {
 }
 form.openid ul li {float:left; padding:4px}
 form.openid ul li span {padding:0 1em 0 3px}
-form.openid fieldset {clear:both; padding:1em}
+form.openid fieldset {
+    clear:both; 
+    padding:1em;
+    border: 1px solid #f4f4f4;
+}
 form.openid div+fieldset {display:none}
 form.openid label {display:block; font-weight:bold; font-size:larger; margin-bottom:.5em}
 input[name=openid_username] {width:8em}
 input[name=openid_identifier] {width:18em}
 form.openid ul li.highlight { -moz-border-radius:4px; -webkit-border-radius:4px; background-color: #FD6}
-form.openid fieldset div {
+form.openid fieldset div.inpo {
     -moz-border-radius:4px; 
     -webkit-border-radius:4px; 
     background: #cdcdcd; 
@@ -34,10 +43,23 @@ form.openid input {
     font-size: 100%;
     border-bottom: 2px solid #222;
 }
-form.openid input[type='submit'] {margin-left:1em;}
+form.openid input[type='submit'] {
+    border: 0;
+    border: 1px outset #222;
+    margin-left:1em;
+    background: #e1e1e1;
+}
 
 .openid_logo{color:#F7931E;padding:6px 0px 8px 28px; background: url(/img/openid/openidico.png) no-repeat}
 
 #openid_login{float:left; font-size:larger; width:30%; margin:2em 1em; text-align:center}
-#openid_login div{margin-top:0.5em}
-#openid_login div+span{font-size:smaller}
+#openid_login div.inpo{margin-top:0.5em}
+#openid_login div.inpo+span{font-size:smaller}
+
+.login .userNotice {
+    font-weight: normal;
+    font-size: 85%;
+    color: #444;
+    margin: 0.4em 0;
+    padding: 0 1em;
+}

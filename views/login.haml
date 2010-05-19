@@ -6,6 +6,8 @@
   $(function() { $("form.openid").openid(); });
 
 .login
+  %h1 Please, identify yourself.
+
   %form{:action=>'/login/openid', :class=>'openid', :method=>'POST',:enctype=>"multipart/form-data"}
     %ul.providers
       %li.openid
@@ -15,7 +17,7 @@
       %li.direct{:title => "Google"}
         %img{:src => "/img/openid/googleW.png", :alt=>"icon"}
         %span https://www.google.com/accounts/o8/id
-      %li.direct{:title => "Yahoo"}
+      %li.direct{:title => "Yahoo!"}
         %img{:src=>"/img/openid/yahooW.png", :alt=>"icon"}
         %span http://yahoo.com/
 
@@ -59,26 +61,28 @@
         %img{:src=>"/img/openid/verisign.png", :alt=>"icon"}
         %span http://username.pip.verisignlabs.com/
 
+    %fieldset
+      %label{:for => 'openid_username'} 
+        Enter your 
+        %span OpenID Provider Key
+      .inpo
+        %span 
+        %input{:name=>'openid_username'}
+        %span 
+        %input{:name=>'op_openid', :type=>'submit', :value=>"Login"}
 
+    %fieldset
+      %label{:for => 'openid_identifier'} 
+        Enter your 
+        %a.openid_logo{:href=>'http://openid.net'} OpenId
+      .inpo
+        %input{:name=>'openid_identifier'}
+        %input{:name=>'op_openid', :type=>'submit', :value=>"Login"}
 
-
-      %fieldset
-        %label{:for => 'openid_username'} 
-          Enter your 
-          %span OpenID Provider Key
-        .inpo
-          %span 
-          %input{:name=>'openid_username'}
-          %span 
-          %input{:name=>'op_openid', :type=>'submit', :value=>"Login"}
-
-      %fieldset
-        %label{:for => 'openid_identifier'} 
-          Enter your 
-          %a.openid_logo{:href=>'http://openid.net'} OpenId
-        .inpo
-          %input{:name=>'openid_identifier'}
-          %input{:name=>'op_openid', :type=>'submit', :value=>"Login"}
+    .userNotice
+      OpenID allows you to use your account on another site to login here. We
+      never have access to your personal information.
+      %a{:href=>'http://openid.net'} More...
 
   %form{:action=>'/login', :method=>'POST',:enctype=>"multipart/form-data"}
     %fieldset

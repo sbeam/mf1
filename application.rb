@@ -49,18 +49,13 @@ get '/users/:username' do
 end
 
 post '/login/openid' do
-    openid = params[:openid_url]
+    openid = params[:openid_identifier]
+    puts params.inspect
     begin
       oidreq = openid_consumer.begin(openid)
     rescue OpenID::DiscoveryFailure => why
       "Sorry, we couldn't find your identifier '#{openid}'"
     else
-      # You could request additional information here - see specs:
-      # http://openid.net/specs/openid-simple-registration-extension-1_0.html
-      #oidreq.add_extension_arg('sreg','required','email')
-      # oidreq.add_extension_arg('sreg','optional','fullname, email')
-       
-       
       add_simple_registration_fields(oidreq, { :required => 'email', :optional => ['nickname','dob'] })
        
       # Send request - first parameter: Trusted Site,
@@ -87,15 +82,8 @@ get '/login/openid/complete' do
         redirect '/login'
 
     when OpenID::Consumer::SUCCESS
-        # Access additional informations:
-        # puts params['openid.sreg.nickname']
-        # puts params['openid.sreg.fullname']
-
-        # Startup something
-        # Maybe something like
         session[:openid_display_identifier] = oidresp.display_identifier
         session[:openid_nick] = params['openid.sreg.nickname']
-
 
         if is_google_federated_login?(oidresp)
             registration = OpenID::AX::FetchResponse.from_success_response(oidresp)
@@ -103,13 +91,11 @@ get '/login/openid/complete' do
             registration = OpenID::SReg::Response.from_success_response(oidresp)
         end
 
-
         if registration.class.to_s == "OpenID::AX::FetchResponse"
           email = registration['http://schema.openid.net/contact/email']
         else
           email = registration['email']
         end
-        
 
         @reg = registration
 
