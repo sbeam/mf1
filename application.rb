@@ -1,6 +1,10 @@
 require 'rubygems'
 require 'sinatra'
 require 'environment'
+gem 'ruby-openid', '>=2.1.7'
+require 'openid'
+require 'openid/store/filesystem'
+
 
 enable :sessions
 use Rack::Flash
@@ -17,23 +21,26 @@ end
 
 
 get '/' do
-    ask_for_auth! # TODO poor little Safari needs this
     if @current_user.nil? or @current_user.following.empty?
         @chirps = Chirp.latest(10)
     else
         @chirps = Chirp.latest(10, @current_user.following << auth_username)
     end
 
-    haml :root
+    session.inspect
+    #haml :root
 end
 
 get '/login' do
-    protect!
-    redirect '/'
+    haml :login
+end
+
+post '/login' do
+    openid_begin params[:openid_url]
+    haml :login
 end
 
 get '/users/:username' do
-    ask_for_auth!
     if User.exists?(params[:username])
         @chirps = Chirp.all(:conditions => {:user => params[:username]},
                             :order=>'created_at desc')
@@ -41,6 +48,60 @@ get '/users/:username' do
     end
     haml :chirplist
 end
+
+post '/login/openid' do
+    openid = params[:openid_url]
+    begin
+      oidreq = openid_consumer.begin(openid)
+    rescue OpenID::DiscoveryFailure => why
+      "Sorry, we couldn't find your identifier '#{openid}'"
+    else
+      # You could request additional information here - see specs:
+      # http://openid.net/specs/openid-simple-registration-extension-1_0.html
+      oidreq.add_extension_arg('sreg','required','nickname')
+      # oidreq.add_extension_arg('sreg','optional','fullname, email')
+      
+      # Send request - first parameter: Trusted Site,
+      # second parameter: redirect target
+      redirect oidreq.redirect_url(root_url, root_url + "/login/openid/complete")
+    end
+end
+
+
+get '/login/openid/complete' do
+    oidresp = openid_consumer.complete(params, request.url)
+
+    case oidresp.status
+    when OpenID::Consumer::FAILURE
+        flash[:error] = "Sorry, we could not authenticate you with the given identifier"
+        redirect '/login'
+
+    when OpenID::Consumer::SETUP_NEEDED
+        flash[:error] = "Immediate request failed - Setup Needed"
+        redirect '/login'
+
+    when OpenID::Consumer::CANCEL
+        flash[:error] = "Login cancelled."
+        redirect '/login'
+
+    when OpenID::Consumer::SUCCESS
+        # Access additional informations:
+        # puts params['openid.sreg.nickname']
+        # puts params['openid.sreg.fullname']
+
+        # Startup something
+        # Maybe something like
+        session[:openid_display_identifier] = oidresp.display_identifier
+        session[:openid_nick] = params['openid.sreg.nickname']
+
+        params.inspect
+
+        #flash[:notice] = "OpenID login successful."
+        #redirect '/'
+    end
+end
+
+
 
 post '/chirp' do
     protect!
@@ -95,6 +156,7 @@ post '/users/find' do
     haml :searchresult
 end
 
+
 get '/profile' do
     protect!
     @profile = User.new(auth_username)
@@ -146,32 +208,33 @@ end
 
 helpers do
 
-  def protect!
-    unless authenticated?
-      response['WWW-Authenticate'] = %(Basic realm="mf1 userlist")
-      throw(:halt, [401, "Not authorized\n"])
+    def openid_consumer
+        @openid_consumer ||= OpenID::Consumer.new(session,
+                                                  OpenID::Store::Filesystem.new("#{APP_ROOT}/tmp/openid"))
     end
-  end
+    
 
-  def ask_for_auth!  # this is here only for poor little Safari
-      unless session[:did_auth].nil?
-          protect!
-      end
-  end
-
-  def authenticated?
-    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-    if @auth.provided? && @auth.basic? && @auth.credentials 
-
-        @current_user = User.find_by_username(@auth.credentials[0])
-        if @current_user && @current_user.check(@auth.credentials)
-            session[:did_auth] = 1
-        else
-           @current_user = User.create(:username => @auth.credentials[0], :password => @auth.credentials[1])
-           @current_user.save
+    def protect!
+        unless authenticated?
+            #session[:pre_auth_action] = request.method
+            redirect '/login'
         end
     end
-  end
+
+    def openid_begin (url)
+        response = openid_consumer.begin url
+
+        if response.status == OpenID::SUCCESS
+            redirect_url = response.redirect_url(home_url, complete_openid_url)
+            redirect redirect_url
+            return
+        end
+    end
+
+
+    def authenticated?
+        false
+    end
 
   def auth_username
       @auth.credentials[0] if authenticated?
@@ -197,6 +260,9 @@ helpers do
       '/waxwings.jpg'
   end
 
+  def root_url
+      request.url.match(/(^.*\/{2}[^\/]*)/)[1]
+  end
 
   # Usage: partial :foo
   def partial(page, options={})

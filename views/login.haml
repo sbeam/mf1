@@ -1,0 +1,18 @@
+
+.login
+  %form{:action=>'/login/openid', :method=>'POST',:enctype=>"multipart/form-data"}
+    %fieldset
+      %legend OpenID Login
+      %label{:for => 'openid_url'} OpenID key
+      %input{:name=>'openid_url'}
+      %input{:name=>'op_openid', :type=>'submit', :value=>"next"}
+
+  %form{:action=>'/login', :method=>'POST',:enctype=>"multipart/form-data"}
+    %fieldset
+      %legend Local Login
+      %label{:for => 'username'} Username
+      %input{:name=>'username'}
+      %label{:for => 'password'} Password
+      %input{:name=>'password'}
+      %input{:name=>'op', :type=>'submit', :value=>"login"}
+
