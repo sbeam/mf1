@@ -27,6 +27,7 @@ get '/' do
         @chirps = Chirp.latest(10, @current_user.following << auth_username)
     end
 
+    puts session.inspect
     haml :root
 end
 
@@ -49,7 +50,6 @@ end
 
 post '/login/openid' do
     openid = params[:openid_identifier]
-    puts params.inspect
     begin
       oidreq = openid_consumer.begin(openid)
     rescue OpenID::DiscoveryFailure => why
@@ -91,11 +91,18 @@ get '/login/openid/complete' do
         if registration.class.to_s == "OpenID::AX::FetchResponse"
             reginfo = { :email => registration['http://schema.openid.net/contact/email'] }
         else
-            reginfo = { :email => registration['email'], :nick => registration['nickname'] }
+            reginfo = { :email => registration['email'], :nickname => registration['nickname'] }
         end
 
-        @user = User.find_by_openid_url(oidresp.identity_url)
-        @user ||= User.create_from_openid(oidresp, reginfo)
+        @user = User.find_by_openid_url(oidresp.identity_url) 
+        if @user.nil?
+            @user = User.create(:active => true, 
+                                :username => reginfo[:nickname] || oidresp.display_identifier,
+                                :email => reginfo[:email].to_s,
+                                :openid_display_identifier => oidresp.display_identifier,
+                                :openid_url => oidresp.identity_url)
+            @user.save!
+        end
 
         session[:user_id] = @user.id
         session[:openid_display_identifier] = oidresp.display_identifier
@@ -231,19 +238,9 @@ helpers do
         end
     end
 
-    def openid_begin (url)
-        response = openid_consumer.begin url
-
-        if response.status == OpenID::SUCCESS
-            redirect_url = response.redirect_url(home_url, complete_openid_url)
-            redirect redirect_url
-            return
-        end
-    end
-
 
     def authenticated?
-        false
+        session[:user_id] && @current_user = User.find_by_id(session[:user_id])
     end
 
   def auth_username
