@@ -27,8 +27,7 @@ get '/' do
         @chirps = Chirp.latest(10, @current_user.following << auth_username)
     end
 
-    session.inspect
-    #haml :root
+    haml :root
 end
 
 get '/login' do
