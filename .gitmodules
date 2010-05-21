@@ -1,0 +1,3 @@
+[submodule "sinatra-authentication"]
+	path = sinatra-authentication
+	url = git@github.com:sbeam/sinatra-authentication.git

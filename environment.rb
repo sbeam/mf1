@@ -1,10 +1,15 @@
 require 'rubygems'
+require 'sinatra/base'
 require 'haml'
+require 'sinatra-authentication'
 require 'ostruct'
 require 'mongo'
 require 'mongo_mapper'
 require 'rack-flash'
 require 'joint'
+gem 'ruby-openid', '>=2.1.7'
+require 'openid'
+require 'openid/store/filesystem'
 require 'openid/extensions/sreg'
 require 'openid/extensions/ax'
 
@@ -32,9 +37,6 @@ configure do
 
   APP_ROOT = File.dirname(__FILE__)
 
-  FileUtils.mkdir_p 'log' unless File.exists?('log')
-  log = File.new("log/sinatra.log", "a+")
-  $stdout.reopen(log)
-  $stderr.reopen(log)
-
 end
+
+logger = Logger.new($stdout)
