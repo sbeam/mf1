@@ -1,18 +1,3 @@
-require 'rubygems'
-require 'haml'
-require 'ostruct'
-require 'mongo'
-require 'mongo_mapper'
-require 'rack-flash'
-require 'joint'
-#require 'sinatra-authentication'
-gem 'ruby-openid', '>=2.1.7'
-require 'openid'
-require 'openid/store/filesystem'
-require 'openid/extensions/sreg'
-require 'openid/extensions/ax'
-require 'rack/contrib'
-
 
 require 'application'
 

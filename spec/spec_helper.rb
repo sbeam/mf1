@@ -1,16 +1,17 @@
+require File.join(File.dirname(__FILE__), '..', 'application.rb')
+
 require 'rubygems'
-require 'sinatra'
 require 'spec'
+require 'spec/autorun'
 require 'spec/interop/test'
 require 'rack/test'
+require 'sinatra'
 
 # set test environment
 Sinatra::Base.set :environment, :test
 Sinatra::Base.set :run, false
 Sinatra::Base.set :raise_errors, true
 Sinatra::Base.set :logging, false
-
-require 'application'
 
 # establish in-memory database for testing
 ## TODO - MongoDB equiv - DataMapper.setup(:default, "sqlite3::memory:")

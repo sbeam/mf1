@@ -1,3 +1,6 @@
+ENV['RACK_ENV'] = 'test'
+ENV['APP_ROOT'] = File.dirname(__FILE__)+'/../';
+
 require '../application'
 require 'testhelper'
 require 'test/unit'

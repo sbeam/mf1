@@ -1,10 +1,24 @@
-require 'sinatra/base'
+require 'rubygems'
+require 'haml'
+require 'ostruct'
+require 'mongo'
+require 'mongo_mapper'
+require 'rack-flash'
+require 'joint'
+#require 'sinatra-authentication'
+gem 'ruby-openid', '>=2.1.7'
+require 'openid'
+require 'openid/store/filesystem'
+require 'openid/extensions/sreg'
+require 'openid/extensions/ax'
+require 'rack/contrib'
 
+require 'sinatra/base'
 
 module Mindfli
     class Controller < Sinatra::Base
     #use Rack::Session::Cookie, :secret => "heyhihello"
-    require 'environment'
+    require File.join(File.dirname(__FILE__), 'environment.rb')
 
     enable :sessions
     use Rack::Flash
