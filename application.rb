@@ -1,8 +1,10 @@
-require 'environment'
+require 'sinatra/base'
 
 
-class Mindfli < Sinatra::Base
+module Mindfli
+    class Controller < Sinatra::Base
     #use Rack::Session::Cookie, :secret => "heyhihello"
+    require 'environment'
 
     enable :sessions
     use Rack::Flash
@@ -344,6 +346,7 @@ class Mindfli < Sinatra::Base
         end 
 
     end
+end
 end
 
 URL_REGEXP = Regexp.new('\b ((https?|telnet|gopher|file|wais|ftp) : [\w/#~:.?+=&%@!\-] +?) (?=[.:?\-] * (?: [^\w/#~:.?+=&%@!\-]| $ ))', Regexp::EXTENDED)
