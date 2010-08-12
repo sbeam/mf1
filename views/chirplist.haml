@@ -46,9 +46,9 @@
         .chirp-pic
           %img{:src => db_image_src(chirp.pic)}
       .chirp= chirp['text']
-      - if chirp['clicky']
+      - if chirp['url']
         .clicky
-          %a{:href => chirp['clicky'], :class=>'chirplink'}= chirp['clicky']
+          %a{:href => chirp['url'], :class=>'chirplink'}= chirp['url']
       %em 
         = time_ago_in_words(chirp['created_at'])
 
