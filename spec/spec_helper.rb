@@ -13,6 +13,7 @@ Sinatra::Base.set :run, false
 Sinatra::Base.set :raise_errors, true
 Sinatra::Base.set :logging, false
 
+
 # establish in-memory database for testing
 ## TODO - MongoDB equiv - DataMapper.setup(:default, "sqlite3::memory:")
 

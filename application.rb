@@ -25,11 +25,9 @@ module Mindfli
 
     configure do
         set :views, "#{File.dirname(__FILE__)}/views"
+        set :environment, 'development'
+        set :public, 'public'
     end
-
-    set :environment, 'development'
-    set :public, 'public'
-    set :views,  'views'
 
 
     error do
